@@ -15,6 +15,12 @@ class Settings(BaseSettings):
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
     allowed_hosts: list[str] = Field(default_factory=lambda: ["localhost", "127.0.0.1", "[::1]"])
     database_timeout_seconds: float = Field(default=3, gt=0, le=30)
+    ai_provider: Literal["disabled", "gemini"] = "disabled"
+    ai_model: str | None = Field(default=None, min_length=1, max_length=120)
+    gemini_api_key: SecretStr | None = None
+    ai_timeout_seconds: float = Field(default=45, gt=0, le=120)
+    ai_max_output_tokens: int = Field(default=1024, ge=64, le=4096)
+    ai_max_retries: int = Field(default=1, ge=0, le=2)
 
     @field_validator("database_url")
     @classmethod
