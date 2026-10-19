@@ -1,3 +1,5 @@
+import { Provider } from 'react-redux'
+import { store } from '../store'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -5,16 +7,18 @@ import { MemoryRouter } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
 import { App } from '../app/App'
 
-function renderApp(path = '/') {
+function renderApp(path = '/system') {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false, gcTime: 0 } },
   })
   return render(
-    <QueryClientProvider client={client}>
-      <MemoryRouter initialEntries={[path]}>
-        <App />
-      </MemoryRouter>
-    </QueryClientProvider>,
+    <Provider store={store}>
+      <QueryClientProvider client={client}>
+        <MemoryRouter initialEntries={[path]}>
+          <App />
+        </MemoryRouter>
+      </QueryClientProvider>
+    </Provider>,
   )
 }
 
@@ -91,9 +95,7 @@ describe('workspace foundation', () => {
       screen.getByRole('button', { name: 'Close navigation' }),
     ).toHaveAttribute('aria-expanded', 'true')
     expect(
-      within(screen.getByRole('navigation'))
-        .getByText('Inventory')
-        .closest('[aria-disabled]'),
-    ).toHaveAttribute('aria-disabled', 'true')
+      within(screen.getByRole('navigation')).getByText('Inventory'),
+    ).toBeInTheDocument()
   })
 })

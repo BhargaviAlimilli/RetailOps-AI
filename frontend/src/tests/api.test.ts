@@ -15,7 +15,7 @@ describe('typed API client', () => {
         ),
     )
     await expect(getJson('/api/v1/health', schema)).rejects.toBeInstanceOf(
-      z.ZodError,
+      ApiError,
     )
   })
   it('keeps error bodies private and preserves request identity', async () => {

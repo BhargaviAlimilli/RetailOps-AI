@@ -10,7 +10,7 @@ test('connected workspace is accessible and fits the viewport', async ({
     ready.status(),
     'Start the backend and demo PostgreSQL before this test',
   ).toBe(200)
-  await page.goto('/')
+  await page.goto('/system')
   await expect(
     page.getByRole('heading', { name: 'Workspace overview' }),
   ).toBeVisible()
