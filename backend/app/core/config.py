@@ -28,6 +28,22 @@ class Settings(BaseSettings):
     ai_max_generations_per_minute: int = Field(default=10, ge=1, le=60)
     ai_max_generations_per_day: int = Field(default=100, ge=1, le=1000)
     ai_max_conversations_per_user: int = Field(default=100, ge=1, le=100)
+    rag_enabled: bool = False
+    gemini_embedding_model: str = Field(
+        default="gemini-embedding-001", pattern=r"^gemini-embedding-[a-z0-9._-]+$"
+    )
+    rag_embedding_dimensions: int = Field(default=768, ge=768, le=768)
+    rag_max_document_characters: int = Field(default=100000, ge=1000, le=100000)
+    rag_max_documents_per_user: int = Field(default=50, ge=1, le=50)
+    rag_max_chunks_per_document: int = Field(default=200, ge=1, le=200)
+    rag_embedding_batch_size: int = Field(default=16, ge=1, le=16)
+    rag_timeout_seconds: float = Field(default=30, gt=0, le=60)
+    rag_max_query_characters: int = Field(default=2000, ge=1, le=8000)
+    rag_max_queries_per_minute: int = Field(default=20, ge=1, le=60)
+    rag_max_queries_per_day: int = Field(default=200, ge=1, le=1000)
+    rag_max_ingestions_per_day: int = Field(default=20, ge=1, le=50)
+    rag_semantic_max_distance: float = Field(default=0.5, ge=0, le=1)
+    rag_rerank_enabled: bool = True
 
     @field_validator("ai_model", mode="before")
     @classmethod

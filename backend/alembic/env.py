@@ -16,7 +16,20 @@ url = settings.database_url.get_secret_value()
 
 
 def run_migrations(connection):
-    context.configure(connection=connection, target_metadata=Base.metadata, compare_type=True)
+    # LangGraph owns its four explicitly migrated checkpoint tables, not ORM entities.
+    def include_object(obj, name, type_, reflected, compare_to):
+        return not (
+            type_ == "table"
+            and name
+            in {"checkpoint_migrations", "checkpoints", "checkpoint_blobs", "checkpoint_writes"}
+        )
+
+    context.configure(
+        connection=connection,
+        target_metadata=Base.metadata,
+        compare_type=True,
+        include_object=include_object,
+    )
     with context.begin_transaction():
         context.run_migrations()
 

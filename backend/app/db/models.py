@@ -4,6 +4,7 @@ import uuid
 from datetime import datetime
 from decimal import Decimal
 
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
     Boolean,
     CheckConstraint,
@@ -231,6 +232,8 @@ class ConversationMessage(Identity, Base):
     usage: Mapped[dict | None] = mapped_column(JSONB)
     error_code: Mapped[str | None] = mapped_column(String(60))
     finish_reason: Mapped[str | None] = mapped_column(String(40))
+    citations: Mapped[list | None] = mapped_column(JSONB)
+    tool_trace: Mapped[list | None] = mapped_column(JSONB)
     __table_args__ = (
         UniqueConstraint("user_id", "request_id", "role"),
         UniqueConstraint("conversation_id", "ordinal"),
@@ -240,4 +243,67 @@ class ConversationMessage(Identity, Base):
             name="conversation_message_status",
         ),
         CheckConstraint("length(content) <= 32768", name="conversation_message_length"),
+    )
+
+
+class AgentRun(Identity, Base):
+    __tablename__ = "agent_runs"
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), index=True)
+    request_id: Mapped[uuid.UUID] = mapped_column(Uuid)
+    inputs: Mapped[dict] = mapped_column(JSONB)
+    status: Mapped[str] = mapped_column(String(30), default="running")
+    purchase_order_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("purchase_orders.id"))
+    proposal: Mapped[dict | None] = mapped_column(JSONB)
+    steps: Mapped[list] = mapped_column(JSONB, default=list)
+    error: Mapped[str | None] = mapped_column(String(300))
+    lease_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    decision: Mapped[dict | None] = mapped_column(JSONB)
+    __table_args__ = (
+        UniqueConstraint("user_id", "request_id"),
+        CheckConstraint(
+            "status IN ('running','awaiting_approval','approved','rejected','error')",
+            name="agent_run_status",
+        ),
+    )
+
+
+class Document(Identity, Base):
+    __tablename__ = "documents"
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), index=True)
+    title: Mapped[str] = mapped_column(String(160))
+    format: Mapped[str] = mapped_column(String(20))
+    content: Mapped[str] = mapped_column(Text)
+    content_hash: Mapped[str] = mapped_column(String(64))
+    embedding_model: Mapped[str] = mapped_column(String(120))
+    status: Mapped[str] = mapped_column(String(20))
+    chunk_count: Mapped[int] = mapped_column(Integer, default=0)
+    error_code: Mapped[str | None] = mapped_column(String(60))
+    processing_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    __table_args__ = (
+        UniqueConstraint("user_id", "content_hash", "embedding_model"),
+        CheckConstraint("format IN ('text','markdown')", name="document_format"),
+        CheckConstraint("status IN ('processing','ready','error')", name="document_status"),
+        CheckConstraint(
+            "length(content) <= 100000 AND chunk_count >= 0 AND chunk_count <= 200",
+            name="document_bounds",
+        ),
+    )
+
+
+class DocumentChunk(Identity, Base):
+    __tablename__ = "document_chunks"
+    document_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("documents.id", ondelete="CASCADE"), index=True
+    )
+    ordinal: Mapped[int] = mapped_column(Integer)
+    content: Mapped[str] = mapped_column(Text)
+    start_offset: Mapped[int] = mapped_column(Integer)
+    end_offset: Mapped[int] = mapped_column(Integer)
+    embedding: Mapped[list[float]] = mapped_column(Vector(768))
+    __table_args__ = (
+        UniqueConstraint("document_id", "ordinal"),
+        CheckConstraint(
+            "ordinal >= 0 AND start_offset >= 0 AND end_offset > start_offset", name="chunk_offsets"
+        ),
+        CheckConstraint("length(content) <= 1400", name="chunk_length"),
     )

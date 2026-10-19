@@ -34,4 +34,4 @@ def test_migrated_schema_constraints_and_utc(db_connection):
     ).fetchone()
     assert str(row[0]) == "12.50"
     assert row[1].tzinfo is not None
-    assert db_connection.execute("SELECT version_num FROM alembic_version").fetchone()[0] == "0003"
+    assert db_connection.execute("SELECT version_num FROM alembic_version").fetchone()[0] == "0005"
