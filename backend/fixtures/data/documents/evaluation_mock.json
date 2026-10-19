@@ -1,0 +1,40 @@
+{
+  "mode": "offline_mock_vectors",
+  "model_calls": 0,
+  "limitations": "Four synthetic queries and deterministic mock semantic rankings verify retrieval plumbing; these metrics do not establish live embedding quality or answer faithfulness.",
+  "documents": 3,
+  "metrics": {
+    "bm25": {
+      "mean_reciprocal_rank_or_correct_abstention": 1.0,
+      "mrr_answerable": 1.0,
+      "hit_at_1_answerable": 1.0,
+      "recall_at_5_answerable": 1.0,
+      "abstention_accuracy": 1.0,
+      "cases": 4
+    },
+    "vector": {
+      "mean_reciprocal_rank_or_correct_abstention": 1.0,
+      "mrr_answerable": 1.0,
+      "hit_at_1_answerable": 1.0,
+      "recall_at_5_answerable": 1.0,
+      "abstention_accuracy": 1.0,
+      "cases": 4
+    },
+    "hybrid": {
+      "mean_reciprocal_rank_or_correct_abstention": 1.0,
+      "mrr_answerable": 1.0,
+      "hit_at_1_answerable": 1.0,
+      "recall_at_5_answerable": 1.0,
+      "abstention_accuracy": 1.0,
+      "cases": 4
+    },
+    "hybrid_reranked": {
+      "mean_reciprocal_rank_or_correct_abstention": 1.0,
+      "mrr_answerable": 1.0,
+      "hit_at_1_answerable": 1.0,
+      "recall_at_5_answerable": 1.0,
+      "abstention_accuracy": 1.0,
+      "cases": 4
+    }
+  }
+}

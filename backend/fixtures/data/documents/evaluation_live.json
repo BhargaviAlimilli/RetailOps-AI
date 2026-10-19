@@ -1,0 +1,16 @@
+{
+  "mode": "live_gemini_embeddings_smoke",
+  "verified_at": "2026-10-19T16:58:59Z",
+  "embedding_model": "gemini-embedding-001",
+  "embedding_dimensions": 768,
+  "actual_embedding_http_requests": 5,
+  "client_side_sdk_failures_before_fix": 2,
+  "documents_ingested": 3,
+  "queries": 2,
+  "hit_at_1": 1.0,
+  "checks": [
+    {"query": "How often should staff count shelves?", "top_title": "stock-counting.md", "http_status": 200},
+    {"query": "What receipt is needed for a refund?", "top_title": "returns-policy.md", "http_status": 200}
+  ],
+  "limitations": "Two short fictional questions verify live embedding ingestion and hybrid search plumbing. This is not a representative quality benchmark or an answer-faithfulness measurement. No generation calls were made by this smoke test."
+}

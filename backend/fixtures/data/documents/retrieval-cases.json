@@ -1,0 +1,6 @@
+[
+  {"query": "How often should staff count shelves?", "expected": "stock-counting.md"},
+  {"query": "Who approves supplier purchase orders?", "expected": "supplier-policy.md"},
+  {"query": "What receipt is needed for a refund?", "expected": "returns-policy.md"},
+  {"query": "Explain lunar spacecraft propulsion", "expected": null}
+]
