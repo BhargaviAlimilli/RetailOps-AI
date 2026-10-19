@@ -50,8 +50,13 @@ export function SettingsPage() {
                 : 'Gemini is not configured. Provider credentials are managed on the server.'}
         </p>
         <p className="subheading">
-          Business data tools and document retrieval are not connected yet. The
-          Companion can explain general concepts once Gemini is configured.
+          {ai.data?.operational_tools
+            ? 'Read-only business data tools are enabled.'
+            : 'Business data tools are not currently enabled.'}{' '}
+          {ai.data?.document_retrieval
+            ? 'Private document retrieval is enabled.'
+            : 'Document retrieval is not currently enabled.'}{' '}
+          Operational changes require explicit action in the approval workflow.
         </p>
         <Link className="button" to="/assistant">
           Open AI Companion

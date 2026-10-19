@@ -1,0 +1,350 @@
+.knowledge-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+  gap: 24px;
+}
+.knowledge-panel {
+  padding: 24px;
+  border: 1px solid #e0e8e2;
+  background: #fff;
+  border-radius: 10px;
+  margin-bottom: 24px;
+  min-width: 0;
+}
+.knowledge-panel h2 {
+  font-size: 15px;
+  color: #354e3e;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 18px;
+}
+.knowledge-panel h3 {
+  font-size: 15px;
+}
+.knowledge-muted {
+  font-size: 12px;
+  color: #839087;
+  line-height: 1.8;
+}
+.knowledge-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+  color: #536c5b;
+  margin: 16px 0;
+}
+.knowledge-field input,
+.knowledge-field textarea,
+.knowledge-field select {
+  border: 1px solid #dce5df;
+  border-radius: 6px;
+  padding: 11px 12px;
+  font: inherit;
+  background: #fff;
+  color: #344d3e;
+  min-width: 0;
+  width: 100%;
+}
+.knowledge-field input:focus,
+.knowledge-field textarea:focus,
+.knowledge-field select:focus {
+  outline: 3px solid #e2eee5;
+  border-color: #6ba87d;
+}
+.knowledge-field textarea {
+  resize: vertical;
+  line-height: 1.7;
+}
+.knowledge-empty {
+  padding: 24px 10px;
+  text-align: center;
+  color: #91a095;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.knowledge-document {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  border-top: 1px solid #eef2ed;
+  padding: 17px 0;
+  flex-wrap: wrap;
+}
+.knowledge-document strong {
+  font-size: 13px;
+  color: #47634e;
+}
+.knowledge-document p {
+  font-size: 11px;
+  color: #93a096;
+  margin: 6px 0;
+}
+.knowledge-delete {
+  padding: 14px;
+  background: #fff9f4;
+  border: 1px solid #eee0d4;
+  border-radius: 6px;
+  width: 100%;
+}
+.knowledge-search {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+}
+.knowledge-search label {
+  flex: 1;
+}
+.knowledge-search > button {
+  margin-bottom: 16px;
+}
+.knowledge-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid #dce8df;
+  border-radius: 8px;
+  background: #f3f8f3;
+  padding: 14px 18px;
+  margin: 0 0 24px;
+  color: #66846d;
+}
+.knowledge-banner p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.knowledge-banner svg {
+  flex-shrink: 0;
+}
+.citation-card {
+  border: 1px solid #dfe9e1;
+  border-radius: 7px;
+  background: #fafcf9;
+  margin: 12px 0;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: #5f7d66;
+}
+.citation-card summary {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+  list-style: none;
+}
+.citation-card summary span {
+  font-weight: 600;
+  flex: 1;
+}
+.citation-card summary small {
+  font-size: 10px;
+  font-weight: 400;
+}
+.citation-card blockquote {
+  margin: 14px 0;
+  line-height: 1.8;
+  color: #546b5b;
+  border-left: 2px solid #abc8b1;
+  padding-left: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.citation-card > p {
+  font-size: 9px;
+  color: #92a095;
+  overflow-wrap: anywhere;
+}
+.agent-selects {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+.agent-history {
+  display: grid;
+  gap: 8px;
+}
+.agent-history button {
+  text-align: left;
+  background: #fafcf9;
+  border: 1px solid #e6ece6;
+  border-radius: 7px;
+  padding: 12px 14px;
+  color: #5b7461;
+  cursor: pointer;
+}
+.agent-history button[aria-pressed='true'] {
+  background: #edf5ee;
+  border-color: #aecdb7;
+}
+.agent-history button strong {
+  font-size: 12px;
+  display: block;
+  margin-bottom: 7px;
+}
+.agent-history button span {
+  font-size: 10px;
+  color: #8ba091;
+}
+.agent-status {
+  font-size: 9px;
+  padding: 5px 7px;
+  border: 1px solid #d3e4d8;
+  background: #f0f7f0;
+  border-radius: 5px;
+  color: #62866c;
+  margin-left: auto;
+}
+.agent-trace {
+  list-style: none;
+  padding: 0;
+  margin: 22px 0;
+}
+.agent-trace li {
+  display: flex;
+  gap: 13px;
+  margin-bottom: 18px;
+}
+.agent-trace li > span {
+  display: grid;
+  place-items: center;
+  background: #edf4ee;
+  border: 1px solid #dce8df;
+  width: 25px;
+  height: 25px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  font-size: 10px;
+  color: #6f9979;
+}
+.agent-trace strong {
+  font-size: 12px;
+  color: #4e6d57;
+  text-transform: capitalize;
+}
+.agent-trace small {
+  margin-left: 10px;
+  font-size: 9px;
+  color: #8ba591;
+}
+.agent-trace p {
+  font-size: 11px;
+  line-height: 1.7;
+  color: #86988b;
+  margin: 5px 0;
+}
+.agent-proposal {
+  padding: 18px;
+  background: #f8fbf7;
+  border: 1px solid #e0eade;
+  border-radius: 8px;
+}
+.agent-proposal h3 {
+  margin: 0 0 18px;
+  color: #43634d;
+}
+.agent-proposal dl {
+  margin: 0;
+}
+.agent-proposal dl > div {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin: 13px 0;
+  font-size: 12px;
+}
+.agent-proposal dt {
+  color: #8a9c8e;
+}
+.agent-proposal dd {
+  margin: 0;
+  text-align: right;
+  color: #496c53;
+}
+.agent-proposal > p,
+.agent-decision p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #7f9485;
+}
+.agent-decision {
+  margin-top: 22px;
+}
+.agent-decision button {
+  margin: 5px 8px 5px 0;
+}
+.knowledge-panel [role='alert'] {
+  color: #a05e44;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.knowledge-panel [role='status'] {
+  font-size: 12px;
+  color: #64876e;
+}
+.knowledge-panel button:focus-visible,
+.citation-card summary:focus-visible {
+  outline: 3px solid #89b898;
+  outline-offset: 3px;
+}
+@media (max-width: 1050px) {
+  .knowledge-layout {
+    grid-template-columns: 1fr;
+  }
+  .knowledge-add {
+    order: -1;
+  }
+  .knowledge-add textarea {
+    max-height: 180px;
+  }
+}
+@media (max-width: 650px) {
+  .knowledge-panel {
+    padding: 18px;
+  }
+  .knowledge-layout {
+    gap: 0;
+  }
+  .knowledge-search {
+    display: block;
+  }
+  .citation-card summary {
+    flex-wrap: wrap;
+  }
+  .citation-card summary small {
+    width: 100%;
+    margin-left: 22px;
+  }
+  .knowledge-banner {
+    padding: 12px;
+  }
+  .knowledge-banner p {
+    font-size: 11px;
+  }
+}
+
+.tool-execution-card {
+  padding: 10px 12px;
+  border: 1px solid #e0eade;
+  border-radius: 6px;
+  margin: 8px 0;
+  color: #5c7c64;
+  background: #f8fbf7;
+  font-size: 12px;
+}
+.tool-execution-card strong {
+  font-size: 11px;
+  text-transform: capitalize;
+}
+.tool-execution-card small {
+  margin-left: 10px;
+  color: #879e8d;
+  font-size: 9px;
+}
+.tool-execution-card p {
+  font-size: 11px;
+  color: #82948a;
+  margin: 6px 0 0;
+}

@@ -1,0 +1,66 @@
+.ai-diff,
+.ai-specification {
+  border: 1px solid #dce7df;
+  border-radius: 8px;
+  padding: 18px;
+  margin: 18px 0;
+  background: #fafcf9;
+}
+.ai-diff h3,
+.ai-specification h3 {
+  font-size: 13px;
+  color: #4e6e57;
+  margin: 0 0 16px;
+}
+.ai-diff pre {
+  font-size: 12px;
+  line-height: 1.9;
+  overflow: auto;
+  margin: 0;
+  color: #637969;
+}
+.ai-diff pre > span {
+  display: block;
+}
+.ai-diff .diff-added {
+  background: #e9f4e9;
+  color: #38734a;
+}
+.ai-diff .diff-removed {
+  background: #fff0e9;
+  color: #a5684d;
+}
+.ai-specification h4 {
+  font-size: 11px;
+  color: #83978a;
+  letter-spacing: 0.5px;
+  margin: 18px 0 12px;
+}
+.ai-specification dl {
+  margin: 0;
+}
+.ai-specification dl > div {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 14px;
+  font-size: 12px;
+  margin: 12px 0;
+}
+.ai-specification dt {
+  color: #8a9e90;
+}
+.ai-specification dd {
+  margin: 0;
+  color: #5e7c66;
+  line-height: 1.7;
+}
+@media (max-width: 600px) {
+  .ai-diff,
+  .ai-specification {
+    padding: 13px;
+  }
+  .ai-specification dl > div {
+    grid-template-columns: 80px 1fr;
+    font-size: 11px;
+  }
+}

@@ -1,8 +1,14 @@
 import { z } from 'zod'
+import { citationSchema } from './knowledge'
 import { apiRequest, ApiError } from '../lib/api'
 import { getAccessToken, sessionCleared, store } from '../store'
 import { consumeSSE } from '../features/assistant/sse'
 const id = z.string().uuid()
+export const toolTraceSchema = z.object({
+  name: z.string(),
+  status: z.enum(['completed', 'error']),
+})
+export type ToolTrace = z.infer<typeof toolTraceSchema>
 export const conversationSchema = z.object({
   id,
   title: z.string(),
@@ -20,6 +26,8 @@ export const messageSchema = z.object({
   updated_at: z.string(),
   error_code: z.string().nullable(),
   finish_reason: z.string().nullable().optional(),
+  citations: z.array(citationSchema).nullable().optional(),
+  tool_trace: z.array(toolTraceSchema).nullable().optional(),
   usage: z
     .object({
       input_tokens: z.number(),
@@ -42,6 +50,8 @@ const eventSchema = z.object({
       message: z.string().optional(),
       code: z.string().optional(),
       finish_reason: z.string().nullable().optional(),
+      citations: z.array(citationSchema).nullable().optional(),
+      tool_trace: z.array(toolTraceSchema).nullable().optional(),
     })
     .passthrough(),
 })

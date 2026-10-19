@@ -11,19 +11,25 @@ export class ApiError extends Error {
     this.name = 'ApiError'
   }
 }
-async function request(path: `/api/${string}`, options: RequestInit = {}) {
+export type ApiRequestOptions = RequestInit & { timeoutMs?: number }
+async function request(
+  path: `/api/${string}`,
+  options: ApiRequestOptions = {},
+) {
+  const { timeoutMs = 8_000, ...fetchOptions } = options
   if (!path.startsWith('/api/') || path.includes('://') || path.includes('\\'))
     throw new Error('Expected a same-origin API path')
   const headers = new Headers(options.headers)
   headers.set('Accept', 'application/json')
-  if (options.body) headers.set('Content-Type', 'application/json')
+  if (options.body && !(options.body instanceof FormData))
+    headers.set('Content-Type', 'application/json')
   const token = getAccessToken()
   if (token) headers.set('Authorization', `Bearer ${token}`)
-  const timeout = AbortSignal.timeout(8_000)
+  const timeout = AbortSignal.timeout(timeoutMs)
   let response: Response
   try {
     response = await fetch(path, {
-      ...options,
+      ...fetchOptions,
       headers,
       signal: options.signal
         ? AbortSignal.any([options.signal, timeout])
@@ -58,7 +64,7 @@ async function request(path: `/api/${string}`, options: RequestInit = {}) {
 export async function apiRequest<T>(
   path: `/api/${string}`,
   schema: z.ZodType<T>,
-  options?: RequestInit,
+  options?: ApiRequestOptions,
 ): Promise<T> {
   const response = await request(path, options)
   try {
@@ -81,7 +87,7 @@ export function getJson<T>(
 }
 export async function requestVoid(
   path: `/api/${string}`,
-  options?: RequestInit,
+  options?: ApiRequestOptions,
 ): Promise<void> {
   await request(path, options)
 }

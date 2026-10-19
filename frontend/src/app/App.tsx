@@ -4,6 +4,9 @@ import { AppShell } from '../components/layout/AppShell'
 import { Overview } from '../features/dashboard/Overview'
 import { LoginPage } from '../features/auth/LoginPage'
 import { RequireAuth } from '../features/auth/RequireAuth'
+const DocumentsPage = lazy(() => import('../features/documents/DocumentsPage'))
+const AgentsPage = lazy(() => import('../features/agents/AgentsPage'))
+const ShowcasePage = lazy(() => import('../features/showcase/ShowcasePage'))
 const AssistantPage = lazy(() => import('../features/assistant/AssistantPage'))
 const RetailDashboard = lazy(() =>
   import('../features/retail/Dashboard').then((module) => ({
@@ -75,6 +78,9 @@ export function App() {
           <Route path="/purchase-orders" element={<PurchaseOrdersPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/assistant" element={<AssistantPage />} />
+          <Route path="/documents" element={<DocumentsPage />} />
+          <Route path="/agents" element={<AgentsPage />} />
+          <Route path="/showcase" element={<ShowcasePage />} />
         </Route>
       </Route>
       <Route

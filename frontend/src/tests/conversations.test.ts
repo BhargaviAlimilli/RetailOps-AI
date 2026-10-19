@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { streamMessage } from '../services/conversations'
+import { streamMessage, messageSchema } from '../services/conversations'
 const conversation = '11111111-1111-4111-8111-111111111111',
   request = '22222222-2222-4222-8222-222222222222',
   message = '33333333-3333-4333-8333-333333333333'
@@ -23,6 +23,25 @@ function mockStream(text: string) {
 }
 afterEach(() => vi.unstubAllGlobals())
 describe('conversation stream contract', () => {
+  it('accepts nullable metadata on stored user messages', () => {
+    expect(
+      messageSchema.parse({
+        id: message,
+        conversation_id: conversation,
+        request_id: request,
+        role: 'user',
+        content: 'Question',
+        status: 'completed',
+        created_at: '2026-10-19T00:00:00Z',
+        updated_at: '2026-10-19T00:00:00Z',
+        usage: null,
+        error_code: null,
+        finish_reason: null,
+        citations: null,
+        tool_trace: null,
+      }).citations,
+    ).toBeNull()
+  })
   it('deduplicates delta replay and requires a terminal event', async () => {
     mockStream(
       event(0, 'message.started', {}) +

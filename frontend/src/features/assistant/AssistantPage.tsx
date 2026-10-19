@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Sparkles, ArrowDown, ArrowUpRight } from 'lucide-react'
+import { ToolExecutionCard } from '../../components/ai/ToolExecutionCard'
+import type { ToolTrace } from '../../services/conversations'
 import { conversations, streamMessage } from '../../services/conversations'
+import { CitationCard } from '../../components/ai/CitationCard'
+import type { Citation } from '../../services/knowledge'
+import '../documents/knowledge.css'
 import { AIMessage } from '../../components/ai/AIMessage'
 import { AIComposer } from '../../components/ai/AIComposer'
 import { ConversationSidebar } from '../../components/ai/ConversationSidebar'
@@ -16,6 +21,8 @@ type Attempt = {
   state: 'streaming' | 'stopped' | 'error' | 'completed'
   error?: string
   finishReason?: string | null
+  citations?: Citation[]
+  toolTrace?: ToolTrace[]
 }
 const prompts = [
   'How should I investigate low stock?',
@@ -88,6 +95,8 @@ export default function AssistantPage() {
               ? {
                   ...old,
                   finishReason: event.payload.finish_reason ?? old.finishReason,
+                  citations: event.payload.citations ?? old.citations,
+                  toolTrace: event.payload.tool_trace ?? old.toolTrace,
                   text:
                     event.type === 'message.delta'
                       ? old.text + (event.payload.text ?? '')
@@ -157,8 +166,8 @@ export default function AssistantPage() {
             AI Companion <span>Gemini</span>
           </h1>
           <p>
-            General retail guidance. Live business data tools and document
-            retrieval are not connected yet.
+            Ask about retail data or your private documents. Availability
+            depends on workspace configuration.
           </p>
         </div>
         <span className="ai-private">
@@ -285,6 +294,15 @@ export default function AssistantPage() {
                         </button>
                       </div>
                     )}
+                  {message.tool_trace?.map((tool, index) => (
+                    <ToolExecutionCard
+                      key={`${tool.name}-${index}`}
+                      {...tool}
+                    />
+                  ))}
+                  {message.citations?.map((citation) => (
+                    <CitationCard key={citation.chunk_id} citation={citation} />
+                  ))}
                   {message.finish_reason === 'MAX_TOKENS' && (
                     <p className="ai-message-note">
                       Reply reached the output limit. Ask a follow-up question
@@ -306,6 +324,15 @@ export default function AssistantPage() {
               <>
                 <AIMessage role="user" content={currentAttempt.content} />
                 <AIMessage role="assistant" content={currentAttempt.text}>
+                  {currentAttempt.toolTrace?.map((tool, index) => (
+                    <ToolExecutionCard
+                      key={`${tool.name}-${index}`}
+                      {...tool}
+                    />
+                  ))}
+                  {currentAttempt.citations?.map((citation) => (
+                    <CitationCard key={citation.chunk_id} citation={citation} />
+                  ))}
                   {currentAttempt.finishReason === 'MAX_TOKENS' && (
                     <p className="ai-message-note">
                       Reply reached the output limit. Ask a follow-up question

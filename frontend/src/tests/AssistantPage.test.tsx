@@ -160,6 +160,50 @@ describe('assistant stream recovery', () => {
     ).toBeInTheDocument()
     expect(streamMessage).not.toHaveBeenCalled()
   })
+  it('renders persisted source excerpts and actual backend tool trace metadata', async () => {
+    vi.mocked(conversations.list).mockResolvedValue([
+      {
+        id: conversationId,
+        title: 'Grounded history',
+        created_at: '2026-10-19T00:00:00Z',
+        updated_at: '2026-10-19T00:00:00Z',
+      },
+    ])
+    vi.mocked(conversations.messages).mockResolvedValue([
+      {
+        id: '33333333-3333-4333-8333-333333333333',
+        conversation_id: conversationId,
+        request_id: '22222222-2222-4222-8222-222222222222',
+        role: 'assistant',
+        content: 'Check your returns policy.',
+        status: 'completed',
+        created_at: '2026-10-19T00:00:00Z',
+        updated_at: '2026-10-19T00:00:00Z',
+        usage: null,
+        error_code: null,
+        citations: [
+          {
+            document_id: conversationId,
+            chunk_id: '44444444-4444-4444-8444-444444444444',
+            title: 'Private returns policy',
+            excerpt: 'Unused goods accepted within seven days.',
+            score: 0.8,
+          },
+        ],
+        tool_trace: [{ name: 'search_documents', status: 'completed' }],
+      },
+    ])
+    setup()
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Grounded history' }),
+    )
+    expect(await screen.findByText('search documents')).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Private returns policy'))
+    expect(
+      screen.getByText('Unused goods accepted within seven days.'),
+    ).toBeInTheDocument()
+    expect(streamMessage).not.toHaveBeenCalled()
+  })
   it('keeps provider configuration failures honest and offers recovery', async () => {
     vi.mocked(streamMessage).mockRejectedValue(
       new Error(

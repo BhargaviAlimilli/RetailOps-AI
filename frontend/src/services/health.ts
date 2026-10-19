@@ -34,6 +34,7 @@ const aiStatusSchema = z.object({
   configured: z.boolean(),
   model: z.string().nullable(),
   operational_tools: z.boolean(),
+  document_retrieval: z.boolean().optional().default(false),
 })
 export function useAIStatus() {
   const user = useAppSelector(selectUser)
