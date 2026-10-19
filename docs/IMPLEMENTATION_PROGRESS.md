@@ -31,3 +31,13 @@
 - Verification: `docker compose config --quiet`, service startup, `pg_isready`, `alembic upgrade head` twice and `alembic current` (0001/head). Direct PostgreSQL queries confirmed extension `vector` and revision `0001`.
 - Used IPv4 loopback explicitly: the earlier localhost connection stalled on this Windows host. The repeated IPv4 migration and HTTP readiness checks succeed.
 - Downgrade deliberately preserves the potentially shared extension; it does not delete business data.
+
+## 2026-10-19 - Phase 1c: connected React workspace
+
+- Added React 19/strict TypeScript/Vite 8, Tailwind 4, React Router, TanStack Query and Zod runtime API validation.
+- Added responsive workspace navigation, reusable button, honest module availability states, query cancellation/deadlines, live service cards, loading/error/retry states, skip link and keyboard navigation.
+- No invented business metrics or AI output. Unimplemented navigation is visibly marked Planned and disabled.
+- Verification: frontend lint, formatting, typecheck, 7 Vitest tests, production build and npm audit. Two Playwright tests passed against the real backend/database (desktop and mobile), including HTTP readiness, live UI status and no viewport overflow.
+- Visually inspected both captured screenshots in `docs/screenshots/`; desktop and mobile layouts are readable without overflow.
+- Tooling correction: older roaming npm 10.2 crashed in dependency peer resolution; the Node-bundled npm 11.17 succeeded. ESLint 10 replaced the now-unsupported v9 after verifying peer compatibility.
+- Phase 1 foundation is functional. Remaining: business schema, identity and retail workflows (Phase 2), then AI/RAG/agents, hardening, CI and interview deliverables.
