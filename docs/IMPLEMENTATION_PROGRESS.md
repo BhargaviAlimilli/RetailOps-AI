@@ -57,3 +57,20 @@
 - Independent review findings fixed: duplicate-SKU concurrency returns 409, same-name stores remain separate, non-UTC PostgreSQL sessions still produce UTC daily totals, unsupported extreme dates return 422.
 - Verification: scoped Ruff lint/format; **20 tests passed** (7 real PostgreSQL reporting/product/security regressions and 13 calculation/input-validation tests). No skipped integration checks in this backend-directory run.
 - Stock mutations and purchase workflow routes will land separately after their dedicated verification.
+
+## 2026-10-19 - Phase 2c: stock and purchase workflows
+
+- Added manager/admin stock adjustments with nonzero integer deltas, required reasons, reserved-stock protection, row locks, immutable movement/audit records and replay validation.
+- Purchase drafts validate supplier associations, snapshotted authoritative cost, minimum quantities and pack sizes. The server requires explicit submit, approve/reject and receive actions; analyst API calls are forbidden.
+- Approval history records the actor, decision and reason. Receiving atomically updates inventory and records movements; no external supplier submission is claimed.
+- Request-key advisory locks plus per-resource row locks prevent duplicate execution and lost stock updates. Conflicting key reuse is rejected. Multi-product receipt failures roll back both quantities and order status.
+- Purchase listing is paginated and server-filtered so older pending approvals cannot be hidden by a newest-record cap.
+- Verification: **7 real PostgreSQL workflow tests passed**, including concurrent same-key requests, competing stock decrements, complete approval/receiving, supplier validation, older pending-order discovery and atomic failed-receipt rollback. Scoped Ruff checks passed.
+- Independent service review found no double-application or partial-rollback defect; its reporting and pagination findings were corrected and covered separately.
+
+## 2026-10-19 - Phase 2 security follow-up
+
+- `bc94112` bounds login attempts (account/IP, bounded memory) and password verification concurrency; slots remain held until verification finishes even on cancellation.
+- Database connections/pool acquisition/statements have deadlines; outages become generic 503 errors without driver details. Integrity conflicts remain business errors.
+- Isolated test setup installs pgvector in durable public schema under an advisory lock to avoid concurrent teardown races.
+- Agent checks: scoped Ruff passed; 17 scoped hardening tests passed, then 6 availability tests passed after adding an actual PostgreSQL statement-deadline regression. See `backend/SECURITY.md` for process-local limiter and timeout limits.

@@ -9,3 +9,11 @@
 - Validation 422 responses omit original input/context. Authentication 401, authorization 403, missing 404, state/duplicate conflicts 409 and unavailable database 503 are explicit failures. Request IDs are returned in `X-Request-ID`.
 - Inventory uses on-hand minus reserved as available. Zero available is out of stock; positive available at/below reorder point is low stock. Inventory valuation uses current product cost; sales profit uses historical sale-item cost.
 - The first release is one retail organization. All authenticated roles may read all its stores, sales and supplier costs. Future multi-organization isolation requires a distinct reviewed security boundary.
+
+## Audited mutation contracts
+
+Inventory adjustment and purchase creation/transitions require a UUID `Idempotency-Key` header. A retry with the same actor, resource and validated payload returns the existing outcome; conflicting reuse returns 409. Use a fresh key for a new intentional action.
+
+Purchase order statuses: `draft -> pending -> approved -> received` or `draft -> pending -> rejected`. A conversational statement is not authorization. Only explicit authenticated manager/admin API actions can approve. Reject requires a meaningful reason. Supplier minimum/pack constraints are enforced when creating drafts; the server snapshots prices rather than accepting client-supplied costs.
+
+Receiving records an internal retail inventory transition only. The application does not contact or claim to have placed an external supplier order. Any failure rolls back the entire internal receipt.
