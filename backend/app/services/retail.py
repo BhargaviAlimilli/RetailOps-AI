@@ -37,7 +37,7 @@ def money(value) -> Decimal:
 
 
 def reporting_period(start_date: date | None, end_date: date | None):
-    end_date = end_date or datetime.now(UTC).date()
+    end_date = end_date or datetime.now(UTC).date() - timedelta(days=1)
     start_date = start_date or end_date - timedelta(days=27)
     if not (1900 <= start_date.year <= 2100 and 1900 <= end_date.year <= 2100):
         raise HTTPException(422, "Reporting dates must be between 1900 and 2100")

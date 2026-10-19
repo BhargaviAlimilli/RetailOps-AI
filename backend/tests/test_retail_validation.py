@@ -83,3 +83,12 @@ def test_extreme_dates_are_validation_errors_instead_of_overflows(start, end):
     with pytest.raises(HTTPException) as error:
         reporting_period(start, end)
     assert error.value.status_code == 422
+
+
+
+def test_default_report_ends_at_start_of_today_utc():
+    start, end, days = reporting_period(None, None)
+    today = datetime.now(UTC).date()
+    assert end == datetime(today.year, today.month, today.day, tzinfo=UTC)
+    assert days == 28
+    assert start < end

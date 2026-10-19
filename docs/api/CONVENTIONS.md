@@ -17,3 +17,5 @@ Inventory adjustment and purchase creation/transitions require a UUID `Idempoten
 Purchase order statuses: `draft -> pending -> approved -> received` or `draft -> pending -> rejected`. A conversational statement is not authorization. Only explicit authenticated manager/admin API actions can approve. Reject requires a meaningful reason. Supplier minimum/pack constraints are enforced when creating drafts; the server snapshots prices rather than accepting client-supplied costs.
 
 Receiving records an internal retail inventory transition only. The application does not contact or claim to have placed an external supplier order. Any failure rolls back the entire internal receipt.
+
+By default reports end on the last completed UTC day so a partial current day is not compared with a completed prior period. The frontend initially selects 30 completed days; an unfiltered API request selects 28. Explicit dates always control the period.
