@@ -14,13 +14,11 @@ function event(
 function mockStream(text: string) {
   vi.stubGlobal(
     'fetch',
-    vi
-      .fn()
-      .mockResolvedValue(
-        new Response(text, {
-          headers: { 'Content-Type': 'text/event-stream' },
-        }),
-      ),
+    vi.fn().mockResolvedValue(
+      new Response(text, {
+        headers: { 'Content-Type': 'text/event-stream' },
+      }),
+    ),
   )
 }
 afterEach(() => vi.unstubAllGlobals())
@@ -84,13 +82,11 @@ describe('conversation stream contract', () => {
     const cancel = vi.fn()
     vi.stubGlobal(
       'fetch',
-      vi
-        .fn()
-        .mockResolvedValue(
-          new Response(new ReadableStream({ cancel }), {
-            headers: { 'Content-Type': 'text/event-stream' },
-          }),
-        ),
+      vi.fn().mockResolvedValue(
+        new Response(new ReadableStream({ cancel }), {
+          headers: { 'Content-Type': 'text/event-stream' },
+        }),
+      ),
     )
     const promise = streamMessage(
       conversation,

@@ -6,7 +6,7 @@ A retail operations application being built incrementally for a senior full-stac
 
 The local core retail application is functional: sign-in and backend roles, database-calculated dashboard, product catalog/creation, supplier terms, inventory filters/audited adjustments, sales reporting, and purchase drafts with explicit approval and receiving. Reports and actions use PostgreSQL rather than static fixtures in the UI. The demo data is clearly synthetic.
 
-Gemini AI Companion is the next implementation milestone. Streaming model verification, RAG, agent tools/checkpoints, CI/cloud deployment and interview-ready end-to-end AI demonstrations are not complete. See [verified progress](docs/IMPLEMENTATION_PROGRESS.md) and [implementation plan](docs/IMPLEMENTATION_PLAN.md).
+AI Companion now includes private persisted conversations, a Gemini adapter, authenticated SSE streaming, cancellation, replay protection and sanitized Markdown. Local tests use a substituted provider; a real Gemini response has not been verified. RAG, agent tools/checkpoints, CI/cloud deployment and interview-ready end-to-end AI demonstrations are not complete. See [verified progress](docs/IMPLEMENTATION_PROGRESS.md), [AI contracts and limits](backend/AI.md) and [implementation plan](docs/IMPLEMENTATION_PLAN.md).
 
 ![Retail dashboard](docs/screenshots/retail-dashboard-desktop.png)
 
@@ -102,7 +102,7 @@ Browser tests use real services rather than intercepted responses and capture de
 - [Architecture and trade-offs](ARCHITECTURE.md)
 - [Development conventions](AGENTS.md)
 
-The core retail app is locally verified, but the full AI interview demonstration is unfinished. Gemini streaming, document ingestion/retrieval/citations, LangGraph, AI purchase proposals, MCP showcase, CI and deployment remain. The current explicit human purchase approval workflow works independently of AI. No model call, external supplier order, cloud resource or production deployment has been performed.
+The core retail app is locally verified, but the full AI interview demonstration is unfinished. Real Gemini streaming verification, document ingestion/retrieval/citations, LangGraph, AI purchase proposals, MCP showcase, CI and deployment remain. AI Companion currently provides general guidance only; it has no operational tools or document access. The current explicit human purchase approval workflow works independently of AI. No model call, external supplier order, cloud resource or production deployment has been performed.
 
 Security is enforced in the API and services, including analyst write denial, audited transactions, validated authoritative supplier pricing, idempotency/concurrency checks, request/database limits and secret-safe errors. See [security assumptions](SECURITY.md) and [backend safeguards](backend/SECURITY.md). The demo is a single organization; all authenticated roles can read its operational data and supplier costs. Do not expose development servers publicly. Distributed rate limiting, HTTPS/proxy configuration, hardened deployment accounts and production secret management are deployment work.
 
