@@ -11,6 +11,7 @@ class Settings(BaseSettings):
 
     environment: Literal["development", "test", "production"] = "development"
     database_url: SecretStr | None = None
+    demo_password: SecretStr | None = Field(default=None, min_length=12, max_length=256)
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
     allowed_hosts: list[str] = Field(default_factory=lambda: ["localhost", "127.0.0.1", "[::1]"])
     database_timeout_seconds: float = Field(default=3, gt=0, le=30)

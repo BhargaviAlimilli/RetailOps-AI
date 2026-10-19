@@ -74,3 +74,10 @@
 - Database connections/pool acquisition/statements have deadlines; outages become generic 503 errors without driver details. Integrity conflicts remain business errors.
 - Isolated test setup installs pgvector in durable public schema under an advisory lock to avoid concurrent teardown races.
 - Agent checks: scoped Ruff passed; 17 scoped hardening tests passed, then 6 availability tests passed after adding an actual PostgreSQL statement-deadline regression. See `backend/SECURITY.md` for process-local limiter and timeout limits.
+
+## 2026-10-19 - Phase 2 demo setup verification
+
+- Seed CLI now reads the password through secret-safe Settings, including local `backend/.env`, rather than requiring a process-only environment variable.
+- Generated a unique local demo password in ignored `backend/.env`; the value was neither printed nor committed. Accounts: `manager@retailops.demo`, `analyst@retailops.demo`, `admin@retailops.demo`.
+- Actual `retailops_demo` migration and seed succeeded; second seed reported already seeded with no changes.
+- Full backend verification after integration: Ruff lint passed, 41 Python files formatted, **59 tests passed**, and `alembic check` reported no new upgrade operations. Real integration checks executed with local PostgreSQL; no skipped tests in this run.

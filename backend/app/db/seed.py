@@ -1,7 +1,6 @@
 """Populate only an empty local demo database with explicitly synthetic records."""
 
 import asyncio
-import os
 import sys
 import uuid
 from datetime import UTC, datetime, timedelta
@@ -247,7 +246,9 @@ if __name__ == "__main__":
     try:
         loop_factory = asyncio.SelectorEventLoop if sys.platform == "win32" else None
         with asyncio.Runner(loop_factory=loop_factory) as runner:
-            created = runner.run(seed(Settings(), os.environ.get("RETAILOPS_DEMO_PASSWORD", "")))
+            settings = Settings()
+            password = settings.demo_password.get_secret_value() if settings.demo_password else ""
+            created = runner.run(seed(settings, password))
         print(
             "Synthetic demo data created." if created else "Demo already seeded; no changes made."
         )
