@@ -22,3 +22,12 @@
 - Live HTTP checks: `/api/v1/health` returned 200; `/api/v1/ready` returned 200 with the real local database, and 503 before the connection was usable.
 - Review: a coding agent reviewed the foundation; identified secret-error rendering and Windows loop compatibility issues were corrected and verified.
 - No business APIs, authentication, AI integrations or production deployment exist yet.
+
+## 2026-10-19 - Phase 1b: PostgreSQL migration baseline
+
+- Added local-only Docker Compose PostgreSQL 17/pgvector with a named volume, healthcheck and loopback port binding.
+- Docker Desktop recovered after starting the installed desktop service; no reset or volume deletion was performed.
+- Added Alembic async environment, Windows Selector runner, bounded connection timeout and initial pgvector extension revision.
+- Verification: `docker compose config --quiet`, service startup, `pg_isready`, `alembic upgrade head` twice and `alembic current` (0001/head). Direct PostgreSQL queries confirmed extension `vector` and revision `0001`.
+- Used IPv4 loopback explicitly: the earlier localhost connection stalled on this Windows host. The repeated IPv4 migration and HTTP readiness checks succeed.
+- Downgrade deliberately preserves the potentially shared extension; it does not delete business data.
