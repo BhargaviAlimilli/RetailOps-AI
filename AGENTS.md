@@ -17,7 +17,7 @@
 ## Commands (once the foundation is installed)
 - Backend: `cd backend`; `python -m venv .venv`; `.venv/Scripts/python -m pip install -e ".[dev]"`.
 - Backend checks: `.venv/Scripts/python -m ruff check .`, `.venv/Scripts/python -m ruff format --check .`, `.venv/Scripts/python -m pytest`.
-- Backend development: `.venv/Scripts/python -m uvicorn app.main:app --reload`.
+- Backend development: `.venv/Scripts/python -m app`.
 - Frontend: `cd frontend`; `npm ci`; `npm run dev`.
 - Frontend checks: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`.
 - Database: `docker compose up -d db`; migrations and seed commands will be documented when implemented.
