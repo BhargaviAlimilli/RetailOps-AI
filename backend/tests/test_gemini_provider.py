@@ -15,7 +15,7 @@ def configured(**overrides):
     return Settings(
         _env_file=None,
         ai_provider="gemini",
-        ai_model="explicit-test-model",
+        ai_model="gemini-test-model",
         gemini_api_key="fictional-not-a-real-api-key",
         **overrides,
     )
@@ -92,7 +92,7 @@ def test_completion_tools_usage_and_explicit_sdk_configuration():
     assert config.automatic_function_calling.disable
     assert config.max_output_tokens == 1024
     assert factory.call_args.kwargs["http_options"].retry_options.attempts == 1
-    assert client.aio.models.generate_content.call_args.kwargs["model"] == "explicit-test-model"
+    assert client.aio.models.generate_content.call_args.kwargs["model"] == "gemini-test-model"
     client.aio.aclose.assert_awaited_once()
 
 
@@ -162,3 +162,43 @@ def test_deadline_normalizes_error_and_closes_without_retry():
         client.aio.aclose.assert_awaited_once()
 
     asyncio.run(run())
+
+
+def test_constructor_failure_and_malformed_completion_are_sanitized():
+    provider, client, factory = provider_with_sdk()
+    factory.side_effect = ValueError("fictional-private-constructor-key")
+    with pytest.raises(ProviderError) as error:
+        asyncio.run(provider.complete([], system="system"))
+    assert error.value.code == "ai_unavailable"
+    assert "fictional-private" not in str(error.value)
+    factory.side_effect = None
+    client.aio.models.generate_content.return_value = SimpleNamespace(candidates="malformed")
+    with pytest.raises(ProviderError) as error:
+        asyncio.run(provider.complete([], system="system"))
+    assert error.value.code == "ai_invalid_output"
+
+
+def test_stream_propagates_token_limit_finish_reason():
+    async def run():
+        provider, client, _ = provider_with_sdk()
+        chunk = response("truncated")
+        chunk.candidates[0].finish_reason = types.FinishReason.MAX_TOKENS
+        client.aio.models.generate_content_stream.return_value = Stream([chunk])
+        events = [event async for event in provider.stream([], system="system")]
+        assert events[-1].kind == "end"
+        assert events[-1].finish_reason == "MAX_TOKENS"
+
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("model", [" ", "not-a-gemini-model", "fictional-private-api-key"])
+def test_model_identifier_is_validated_without_secret_echo(model):
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError) as error:
+        Settings(_env_file=None, ai_model=model)
+    assert "input_value" not in str(error.value)
+    assert (
+        Settings(_env_file=None, ai_model=" models/gemini-test-model ").ai_model
+        == "models/gemini-test-model"
+    )

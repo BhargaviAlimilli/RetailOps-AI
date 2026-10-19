@@ -16,11 +16,23 @@ class Settings(BaseSettings):
     allowed_hosts: list[str] = Field(default_factory=lambda: ["localhost", "127.0.0.1", "[::1]"])
     database_timeout_seconds: float = Field(default=3, gt=0, le=30)
     ai_provider: Literal["disabled", "gemini"] = "disabled"
-    ai_model: str | None = Field(default=None, min_length=1, max_length=120)
+    ai_model: str | None = Field(
+        default=None, min_length=1, max_length=120, pattern=r"^(models/)?gemini-[a-z0-9._-]+$"
+    )
     gemini_api_key: SecretStr | None = None
     ai_timeout_seconds: float = Field(default=45, gt=0, le=120)
     ai_max_output_tokens: int = Field(default=1024, ge=64, le=4096)
     ai_max_retries: int = Field(default=1, ge=0, le=2)
+    ai_max_active_per_user: int = Field(default=2, ge=1, le=4)
+    ai_max_active_global: int = Field(default=4, ge=1, le=16)
+    ai_max_generations_per_minute: int = Field(default=10, ge=1, le=60)
+    ai_max_generations_per_day: int = Field(default=100, ge=1, le=1000)
+    ai_max_conversations_per_user: int = Field(default=100, ge=1, le=100)
+
+    @field_validator("ai_model", mode="before")
+    @classmethod
+    def strip_model_identifier(cls, value):
+        return value.strip() if isinstance(value, str) else value
 
     @field_validator("database_url")
     @classmethod

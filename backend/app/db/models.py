@@ -207,3 +207,37 @@ class PurchaseOrderApproval(Identity, Base):
 
 
 Index("ix_audit_logs_created_at", AuditLog.created_at)
+
+
+class Conversation(Identity, Base):
+    __tablename__ = "conversations"
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), index=True)
+    title: Mapped[str] = mapped_column(String(120))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    active_request_id: Mapped[uuid.UUID | None] = mapped_column(Uuid)
+    lease_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class ConversationMessage(Identity, Base):
+    __tablename__ = "conversation_messages"
+    conversation_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("conversations.id"), index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), index=True)
+    request_id: Mapped[uuid.UUID] = mapped_column(Uuid)
+    ordinal: Mapped[int] = mapped_column(Integer)
+    role: Mapped[str] = mapped_column(String(20))
+    content: Mapped[str] = mapped_column(Text, default="")
+    status: Mapped[str] = mapped_column(String(20))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    usage: Mapped[dict | None] = mapped_column(JSONB)
+    error_code: Mapped[str | None] = mapped_column(String(60))
+    finish_reason: Mapped[str | None] = mapped_column(String(40))
+    __table_args__ = (
+        UniqueConstraint("user_id", "request_id", "role"),
+        UniqueConstraint("conversation_id", "ordinal"),
+        CheckConstraint("role IN ('user','assistant')", name="conversation_message_role"),
+        CheckConstraint(
+            "status IN ('pending','streaming','completed','cancelled','error')",
+            name="conversation_message_status",
+        ),
+        CheckConstraint("length(content) <= 32768", name="conversation_message_length"),
+    )

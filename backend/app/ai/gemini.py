@@ -136,8 +136,9 @@ class GeminiProvider:
 
     async def _response(self, messages, system, tools=None, schema=None):
         self.ensure_available()
-        client = self._client()
+        client = None
         try:
+            client = self._client()
             async with asyncio.timeout(self.settings.ai_timeout_seconds):
                 for attempt in range(self.settings.ai_max_retries + 1):
                     try:
@@ -153,7 +154,8 @@ class GeminiProvider:
         except Exception as error:
             raise normalize_error(error) from None
         finally:
-            await close_upstream(client.aio)
+            if client is not None:
+                await close_upstream(client.aio)
 
     async def complete(
         self,
@@ -162,7 +164,11 @@ class GeminiProvider:
         system: str,
         tools: list[ToolDefinition] | None = None,
     ) -> AIResult:
-        result = self._result(await self._response(messages, system, tools))
+        response = await self._response(messages, system, tools)
+        try:
+            result = self._result(response)
+        except (ValidationError, AttributeError, TypeError, ValueError):
+            raise ProviderError("ai_invalid_output") from None
         if not result.text and not result.tool_calls:
             raise ProviderError("ai_invalid_output")
         return result
@@ -171,7 +177,7 @@ class GeminiProvider:
         response = await self._response(messages, system, schema=schema)
         try:
             return schema.model_validate_json(self._result(response).text)
-        except ValidationError:
+        except (ValidationError, AttributeError, TypeError, ValueError):
             raise ProviderError("ai_invalid_output") from None
 
     async def stream(
@@ -182,10 +188,12 @@ class GeminiProvider:
         tools: list[ToolDefinition] | None = None,
     ) -> AsyncIterator[AIStreamEvent]:
         self.ensure_available()
-        client = self._client()
+        client = None
         upstream = None
         emitted = False
+        finish_reason = None
         try:
+            client = self._client()
             async with asyncio.timeout(self.settings.ai_timeout_seconds):
                 for attempt in range(self.settings.ai_max_retries + 1):
                     try:
@@ -195,7 +203,11 @@ class GeminiProvider:
                             config=self._config(system, tools),
                         )
                         async for response in upstream:
-                            result = self._result(response)
+                            try:
+                                result = self._result(response)
+                            except (ValidationError, AttributeError, TypeError, ValueError):
+                                raise ProviderError("ai_invalid_output") from None
+                            finish_reason = result.finish_reason or finish_reason
                             if result.text:
                                 emitted = True
                                 yield AIStreamEvent(kind="text", text=result.text)
@@ -206,7 +218,7 @@ class GeminiProvider:
                                 yield AIStreamEvent(kind="usage", usage=result.usage)
                         if not emitted:
                             raise ProviderError("ai_invalid_output")
-                        yield AIStreamEvent(kind="end")
+                        yield AIStreamEvent(kind="end", finish_reason=finish_reason)
                         return
                     except errors.APIError as error:
                         if emitted or not self._retryable(error, attempt):
@@ -222,4 +234,5 @@ class GeminiProvider:
         finally:
             if upstream is not None:
                 await close_upstream(upstream)
-            await close_upstream(client.aio)
+            if client is not None:
+                await close_upstream(client.aio)
