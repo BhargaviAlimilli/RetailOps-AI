@@ -18,6 +18,7 @@ class AIStatus(BaseModel):
     configured: bool
     model: str | None
     operational_tools: bool = False
+    document_retrieval: bool = False
 
 
 @router.get("/status", response_model=AIStatus)
@@ -28,4 +29,10 @@ async def status(request: Request, _user: Annotated[User, Depends(current_user)]
         configured = True
     except ProviderError:
         configured = False
-    return AIStatus(provider=settings.ai_provider, configured=configured, model=settings.ai_model)
+    return AIStatus(
+        provider=settings.ai_provider,
+        configured=configured,
+        model=settings.ai_model,
+        operational_tools=configured,
+        document_retrieval=settings.rag_enabled,
+    )

@@ -12,6 +12,7 @@ def test_ai_status_requires_auth_and_is_explicitly_unconfigured(client, retail_d
         "configured": False,
         "model": None,
         "operational_tools": False,
+        "document_retrieval": False,
     }
 
 

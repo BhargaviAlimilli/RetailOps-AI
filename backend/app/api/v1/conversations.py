@@ -6,6 +6,7 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.ai.gemini import GeminiProvider
+from app.ai.grounded import GroundedProvider
 from app.ai.provider import AIProvider, ProviderError
 from app.api.dependencies import current_user, get_session
 from app.db.models import User
@@ -67,13 +68,16 @@ async def send_message(
 ):
     settings = request.app.state.settings
     timeout = settings.ai_timeout_seconds
+    sessions = async_sessionmaker(request.app.state.database.engine, expire_on_commit=False)
+    # Tests may inject their explicit provider; live Gemini uses bounded read-only grounding.
+    if isinstance(provider, GeminiProvider):
+        provider = GroundedProvider(provider, sessions, settings, user.id)
     try:
         turn = await service.prepare(
             session, user.id, conversation_id, body, provider, timeout, settings
         )
     except ProviderError as error:
         raise HTTPException(503, str(error)) from None
-    sessions = async_sessionmaker(request.app.state.database.engine, expire_on_commit=False)
     return StreamingResponse(
         service.stream_turn(turn, provider, sessions, timeout),
         media_type="text/event-stream",

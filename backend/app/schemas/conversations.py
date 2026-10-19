@@ -51,3 +51,5 @@ class MessageResponse(BaseModel):
     usage: Usage | None
     error_code: str | None
     finish_reason: str | None
+    citations: list[dict] | None = None
+    tool_trace: list[dict] | None = None

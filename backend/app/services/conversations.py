@@ -229,6 +229,8 @@ async def save(
     usage: Usage,
     code: str | None = None,
     finish_reason: str | None = None,
+    citations: list | None = None,
+    tool_trace: list | None = None,
 ) -> None:
     async with sessions() as session, session.begin():
         conversation = await session.scalar(
@@ -242,6 +244,10 @@ async def save(
         message.usage = usage.model_dump()
         message.error_code = code
         message.finish_reason = finish_reason
+        if citations is not None:
+            message.citations = citations
+        if tool_trace is not None:
+            message.tool_trace = tool_trace
         message.updated_at = datetime.now(UTC)
         conversation.updated_at = message.updated_at
         if status in {"completed", "cancelled", "error"}:
@@ -301,6 +307,8 @@ async def stream_turn(
                     "content": stored.content,
                     "usage": stored.usage or Usage().model_dump(),
                     "finish_reason": stored.finish_reason,
+                    "citations": stored.citations or [],
+                    "tool_trace": stored.tool_trace or [],
                 },
             )
         else:
@@ -321,6 +329,7 @@ async def stream_turn(
     finalized = False
     finish_reason = None
     last_saved_size, last_saved_at = 0, monotonic()
+    generation_started = monotonic()
     try:
         await save(sessions, turn, text, "streaming", usage)
         yield event(
@@ -354,8 +363,29 @@ async def stream_turn(
                     yield event(turn, sequence, "message.delta", {"text": chunk.text})
             if not text:
                 raise ProviderError("ai_invalid_output")
-            await save(sessions, turn, text, "completed", usage, finish_reason=finish_reason)
+            citations = getattr(provider, "citations", [])
+            tool_trace = getattr(provider, "tool_trace", [])
+            await save(
+                sessions,
+                turn,
+                text,
+                "completed",
+                usage,
+                finish_reason=finish_reason,
+                citations=citations,
+                tool_trace=tool_trace,
+            )
             finalized = True
+            logger.info(
+                "ai_generation_completed",
+                conversation_id=str(turn.conversation_id),
+                message_id=str(turn.assistant_id),
+                usage=usage.model_dump(),
+                tool_count=len(tool_trace),
+                citation_count=len(citations),
+                duration_ms=round((monotonic() - generation_started) * 1000),
+                finish_reason=finish_reason,
+            )
             sequence += 1
             yield event(
                 turn,
@@ -366,6 +396,8 @@ async def stream_turn(
                     "content": text,
                     "usage": usage.model_dump(),
                     "finish_reason": finish_reason,
+                    "citations": citations,
+                    "tool_trace": tool_trace,
                 },
             )
     except (asyncio.CancelledError, GeneratorExit):
@@ -382,6 +414,12 @@ async def stream_turn(
             )
         )
         await terminal_save(sessions, turn, text, "error", usage, normalized.code)
+        logger.warning(
+            "ai_generation_failed",
+            message_id=str(turn.assistant_id),
+            code=normalized.code,
+            duration_ms=round((monotonic() - generation_started) * 1000),
+        )
         finalized = True
         sequence += 1
         yield event(

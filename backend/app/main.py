@@ -9,14 +9,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
+from app.api.v1.agents import router as agents_router
 from app.api.v1.ai_status import router as ai_status_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.conversations import router as conversations_router
+from app.api.v1.documents import router as documents_router
 from app.api.v1.health import router as health_router
 from app.api.v1.purchasing import router as purchasing_router
 from app.api.v1.retail import router as retail_router
 from app.core.config import Settings
 from app.core.logging import configure_logging
+from app.core.request_limits import RequestLimitsMiddleware
 from app.db.session import Database
 
 
@@ -51,6 +54,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         expose_headers=["X-Request-ID"],
     )
     application.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.allowed_hosts)
+    application.add_middleware(RequestLimitsMiddleware)
 
     @application.middleware("http")
     async def request_context(request: Request, call_next):
@@ -84,7 +88,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(health_router, prefix="/api/v1")
     application.include_router(auth_router, prefix="/api/v1")
     application.include_router(ai_status_router, prefix="/api/v1")
+    application.include_router(agents_router, prefix="/api/v1")
     application.include_router(conversations_router, prefix="/api/v1")
+    application.include_router(documents_router, prefix="/api/v1")
     application.include_router(retail_router, prefix="/api/v1")
     application.include_router(purchasing_router, prefix="/api/v1")
     return application

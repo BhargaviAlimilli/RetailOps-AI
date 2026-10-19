@@ -17,6 +17,7 @@ def configured(**overrides):
         ai_provider="gemini",
         ai_model="gemini-test-model",
         gemini_api_key="fictional-not-a-real-api-key",
+        gemini_stream_transport="sse",
         **overrides,
     )
 
@@ -92,6 +93,7 @@ def test_completion_tools_usage_and_explicit_sdk_configuration():
     assert config.automatic_function_calling.disable
     assert config.max_output_tokens == 1024
     assert factory.call_args.kwargs["http_options"].retry_options.attempts == 1
+    assert factory.call_args.kwargs["http_options"].api_version == "v1"
     assert client.aio.models.generate_content.call_args.kwargs["model"] == "gemini-test-model"
     client.aio.aclose.assert_awaited_once()
 
@@ -202,3 +204,58 @@ def test_model_identifier_is_validated_without_secret_echo(model):
         Settings(_env_file=None, ai_model=" models/gemini-test-model ").ai_model
         == "models/gemini-test-model"
     )
+
+
+def test_real_sdk_serializes_stable_stream_tools_without_beta_fields():
+    import json
+
+    import httpx
+    from google import genai
+
+    from app.ai.tools import definitions
+
+    async def run():
+        requests = []
+
+        def handle(request):
+            requests.append(request)
+            assert request.url.path.startswith("/v1/models/")
+            payload = json.loads(request.content)
+            assert len(payload["tools"][0]["functionDeclarations"]) == 8
+            assert "parametersJsonSchema" not in request.content.decode()
+            assert "parameters_json_schema" not in request.content.decode()
+            frame = {
+                "candidates": [
+                    {
+                        "content": {"parts": [{"text": "Safe response"}], "role": "model"},
+                        "finishReason": "STOP",
+                    }
+                ]
+            }
+            return httpx.Response(
+                200,
+                text="data: " + json.dumps(frame) + "\n\n",
+                headers={"content-type": "text/event-stream"},
+            )
+
+        http_client = httpx.AsyncClient(transport=httpx.MockTransport(handle))
+
+        def factory(**kwargs):
+            kwargs["http_options"] = kwargs["http_options"].model_copy(
+                update={"httpx_async_client": http_client}
+            )
+            return genai.Client(**kwargs)
+
+        provider = GeminiProvider(configured(), client_factory=factory)
+        chunks = [
+            chunk
+            async for chunk in provider.stream(
+                [AIMessage(role="user", content="Explain stock")],
+                system="Be accurate",
+                tools=definitions(),
+            )
+        ]
+        assert len(requests) == 1
+        assert chunks[0].text == "Safe response"
+
+    asyncio.run(run())

@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     allowed_hosts: list[str] = Field(default_factory=lambda: ["localhost", "127.0.0.1", "[::1]"])
     database_timeout_seconds: float = Field(default=3, gt=0, le=30)
     ai_provider: Literal["disabled", "gemini"] = "disabled"
+    gemini_api_version: Literal["v1", "v1beta"] = "v1"
+    gemini_stream_transport: Literal["json", "sse"] = "json"
     ai_model: str | None = Field(
         default=None, min_length=1, max_length=120, pattern=r"^(models/)?gemini-[a-z0-9._-]+$"
     )
