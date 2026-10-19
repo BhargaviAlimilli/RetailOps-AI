@@ -1,0 +1,48 @@
+# Template only: replace REPLACE_* values, review IAM/costs, and explicitly approve deployment.
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: retailops-api
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '3'
+        run.googleapis.com/cloudsql-instances: REPLACE_PROJECT:REPLACE_REGION:REPLACE_INSTANCE
+    spec:
+      serviceAccountName: REPLACE_SERVICE_ACCOUNT_EMAIL
+      containerConcurrency: 20
+      timeoutSeconds: 150
+      containers:
+        - image: REPLACE_REGION-docker.pkg.dev/REPLACE_PROJECT/retailops/api:REPLACE_IMMUTABLE_TAG
+          ports:
+            - containerPort: 8000
+          resources:
+            limits:
+              cpu: '1'
+              memory: 1Gi
+          env:
+            - name: RETAILOPS_ENVIRONMENT
+              value: production
+            - name: RETAILOPS_ALLOWED_HOSTS
+              value: '["REPLACE_API_HOST.run.app"]'
+            - name: RETAILOPS_CORS_ORIGINS
+              value: '["https://REPLACE_FRONTEND_HOST.run.app"]'
+            - name: RETAILOPS_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: retailops-database-url
+                  key: latest
+            - name: RETAILOPS_AI_PROVIDER
+              value: disabled
+          startupProbe:
+            httpGet:
+              path: /api/v1/ready
+              port: 8000
+            periodSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 8000
+            periodSeconds: 30

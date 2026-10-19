@@ -1,0 +1,42 @@
+# Local synthetic-data preview only. This file never provisions cloud resources.
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: retailops_demo
+      POSTGRES_USER: retailops
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a URL-safe local preview password}
+    volumes:
+      - preview_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U retailops -d retailops_demo]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  backend:
+    build: ../backend
+    environment:
+      RETAILOPS_ENVIRONMENT: development
+      RETAILOPS_DATABASE_URL: postgresql+psycopg://retailops:${POSTGRES_PASSWORD}@db:5432/retailops_demo
+      RETAILOPS_DEMO_PASSWORD: ${RETAILOPS_DEMO_PASSWORD:?Set a local demo password of at least 12 characters}
+      RETAILOPS_ALLOWED_HOSTS: '["backend","localhost","127.0.0.1"]'
+      RETAILOPS_AI_PROVIDER: disabled
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/ready', timeout=4)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  frontend:
+    build: ../frontend
+    environment:
+      API_UPSTREAM: http://backend:8000
+    ports:
+      - 127.0.0.1:8080:8080
+    depends_on:
+      backend:
+        condition: service_healthy
+volumes:
+  preview_pgdata:
