@@ -4,11 +4,14 @@ from uuid import uuid4
 
 import structlog
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.api.v1.auth import router as auth_router
 from app.api.v1.health import router as health_router
+from app.api.v1.retail import router as retail_router
 from app.core.config import Settings
 from app.core.logging import configure_logging
 from app.db.session import Database
@@ -65,8 +68,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         finally:
             structlog.contextvars.clear_contextvars()
 
+    @application.exception_handler(RequestValidationError)
+    async def validation_error(_request: Request, error: RequestValidationError):
+        # Pydantic input/context may contain a password or uploaded private text.
+        details = [
+            {"loc": item["loc"], "msg": item["msg"], "type": item["type"]}
+            for item in error.errors()
+        ]
+        return JSONResponse(status_code=422, content={"detail": details})
+
     application.include_router(health_router, prefix="/api/v1")
     application.include_router(auth_router, prefix="/api/v1")
+    application.include_router(retail_router, prefix="/api/v1")
     return application
 
 

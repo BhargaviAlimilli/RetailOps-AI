@@ -41,3 +41,19 @@
 - Visually inspected both captured screenshots in `docs/screenshots/`; desktop and mobile layouts are readable without overflow.
 - Tooling correction: older roaming npm 10.2 crashed in dependency peer resolution; the Node-bundled npm 11.17 succeeded. ESLint 10 replaced the now-unsupported v9 after verifying peer compatibility.
 - Phase 1 foundation is functional. Remaining: business schema, identity and retail workflows (Phase 2), then AI/RAG/agents, hardening, CI and interview deliverables.
+
+## 2026-10-19 - Phase 2a: schema, authentication and synthetic data
+
+- `083e8ae` adds constrained relational retail tables, explicit Alembic migration and per-test isolated PostgreSQL schemas in a dedicated `retailops_test` database.
+- `38880d0` adds salted PBKDF2-SHA256 passwords (600,000 rounds), opaque 8-hour sessions persisted only as SHA256 token hashes, revocation, active-user checks and manager/admin write roles.
+- Guarded seed is development-only and restricted to `retailops_demo`; requires an explicitly supplied local password and refuses unrecognized nonempty data. Synthetic records include 3 stores, 12 products, 270 sales over 90 days, supplier terms, reconciled inventory movements, stockouts and purchase drafts/pending orders.
+- Agent verification: migration upgrade/schema drift checks; 15 schema/health/database checks and 16 auth/seed/health checks passed in their scoped runs. Seed repeatability and inventory reconciliation verified in isolated tests. Real demo population is a separate next step.
+
+## 2026-10-19 - Phase 2b: retail catalog and reporting APIs
+
+- Added authenticated stores/categories/supplier terms/product list/detail, audited product creation with per-store zero balances, paginated literal-text product/inventory search, stock status filters, sales ledger and database-calculated dashboard.
+- Reports use Decimal values, explicit UTC periods, same-length previous periods, complete daily series, store/category splits, zero-sale slow products and current inventory/purchase indicators. Recent workspace activity is explicitly organization-wide.
+- Added secret-safe request validation responses. Invalid payloads cannot echo passwords in `input` fields.
+- Independent review findings fixed: duplicate-SKU concurrency returns 409, same-name stores remain separate, non-UTC PostgreSQL sessions still produce UTC daily totals, unsupported extreme dates return 422.
+- Verification: scoped Ruff lint/format; **20 tests passed** (7 real PostgreSQL reporting/product/security regressions and 13 calculation/input-validation tests). No skipped integration checks in this backend-directory run.
+- Stock mutations and purchase workflow routes will land separately after their dedicated verification.
