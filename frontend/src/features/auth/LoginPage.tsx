@@ -101,7 +101,7 @@ export function LoginPage() {
               type="submit"
               disabled={mutation.isPending}
             >
-              {mutation.isPending ? 'Signing in�' : 'Sign in'}
+              {mutation.isPending ? 'Signing in...' : 'Sign in'}
               <ArrowRight size={18} />
             </button>
           </form>
@@ -114,7 +114,7 @@ export function LoginPage() {
           </a>
         </div>
         <p className="auth-footer">
-          RETAILOPS AI � A CLEARER VIEW OF YOUR BUSINESS
+          RETAILOPS AI - A CLEARER VIEW OF YOUR BUSINESS
         </p>
       </section>
     </main>

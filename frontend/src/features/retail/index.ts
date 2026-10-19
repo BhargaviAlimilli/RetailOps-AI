@@ -1,0 +1,5 @@
+export { RetailDashboard } from './Dashboard'
+export { ProductsPage, SuppliersPage } from './Catalog'
+export { InventoryPage } from './Inventory'
+export { SalesPage } from './Sales'
+export { PurchaseOrdersPage } from './PurchaseOrders'

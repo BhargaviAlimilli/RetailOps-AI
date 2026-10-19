@@ -85,7 +85,6 @@ def test_extreme_dates_are_validation_errors_instead_of_overflows(start, end):
     assert error.value.status_code == 422
 
 
-
 def test_default_report_ends_at_start_of_today_utc():
     start, end, days = reporting_period(None, None)
     today = datetime.now(UTC).date()

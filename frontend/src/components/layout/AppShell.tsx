@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink } from 'react-router'
+import { NavLink, useLocation } from 'react-router'
 import {
   ArrowUpRight,
   BarChart3,
@@ -17,19 +17,23 @@ import {
 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Button } from '../ui/Button'
+import { useAuth } from '../../features/auth/AuthProvider'
 
 const upcoming = [
-  { label: 'Sales Analytics', icon: BarChart3 },
-  { label: 'Inventory', icon: Boxes },
-  { label: 'Products', icon: Package },
-  { label: 'Suppliers', icon: Building2 },
-  { label: 'Purchase Orders', icon: ShoppingCart },
-  { label: 'Documents', icon: FileText },
-  { label: 'AI Companion', icon: Sparkles },
-  { label: 'Settings', icon: Settings2 },
+  { label: 'Sales Analytics', icon: BarChart3, path: '/sales' },
+  { label: 'Inventory', icon: Boxes, path: '/inventory' },
+  { label: 'Products', icon: Package, path: '/products' },
+  { label: 'Suppliers', icon: Building2, path: '/suppliers' },
+  { label: 'Purchase Orders', icon: ShoppingCart, path: '/purchase-orders' },
+  { label: 'Documents', icon: FileText, path: null },
+  { label: 'AI Companion', icon: Sparkles, path: null },
+  { label: 'Settings', icon: Settings2, path: '/settings' },
 ]
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const { user, signOut } = useAuth()
+  const location = useLocation()
+  const title = plannedTitle(location.pathname)
   const [navigationOpen, setNavigationOpen] = useState(false)
   return (
     <div className="app-shell">
@@ -76,7 +80,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <p className="nav-label">WORKSPACE</p>
         <nav aria-label="Main navigation">
           <NavLink
-            className="nav-item active"
+            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
             to="/"
             end
             onClick={() => setNavigationOpen(false)}
@@ -85,18 +89,32 @@ export function AppShell({ children }: { children: ReactNode }) {
             Overview
             <span className="active-dot" />
           </NavLink>
-          {upcoming.map(({ label, icon: Icon }) => (
-            <span
-              key={label}
-              className="nav-item planned"
-              aria-disabled="true"
-              title="Planned module"
-            >
-              <Icon size={18} />
-              <span>{label}</span>
-              <small>Planned</small>
-            </span>
-          ))}
+          {upcoming.map(({ label, icon: Icon, path }) =>
+            path ? (
+              <NavLink
+                key={label}
+                to={path}
+                className={({ isActive }) =>
+                  `nav-item ${isActive ? 'active' : ''}`
+                }
+                onClick={() => setNavigationOpen(false)}
+              >
+                <Icon size={18} />
+                <span>{label}</span>
+              </NavLink>
+            ) : (
+              <span
+                key={label}
+                className="nav-item planned"
+                aria-disabled="true"
+                title="Planned module"
+              >
+                <Icon size={18} />
+                <span>{label}</span>
+                <small>Planned</small>
+              </span>
+            ),
+          )}
         </nav>
         <div className="sidebar-note">
           <span className="note-icon">
@@ -110,6 +128,23 @@ export function AppShell({ children }: { children: ReactNode }) {
             Development preview <ArrowUpRight size={13} />
           </span>
         </div>
+        {user && (
+          <div className="sidebar-account">
+            <span className="workspace-avatar">{user.name.slice(0, 1)}</span>
+            <div>
+              <strong>{user.name}</strong>
+              <small>{user.role}</small>
+            </div>
+            <button
+              className="signout-button"
+              onClick={() => {
+                void signOut().catch(() => {})
+              }}
+            >
+              Sign out
+            </button>
+          </div>
+        )}
         <footer className="sidebar-footer">
           <span className="environment-dot" />
           Local workspace<span>v0.1</span>
@@ -119,9 +154,13 @@ export function AppShell({ children }: { children: ReactNode }) {
         <header className="topbar">
           <div className="breadcrumb">
             Workspace <ChevronRight size={13} />
-            <strong>Overview</strong>
+            <strong>{title}</strong>
           </div>
-          <span className="preview-badge">DEVELOPMENT PREVIEW</span>
+          <span className="preview-badge">
+            {user?.email.endsWith('@retailops.demo')
+              ? 'SYNTHETIC DEMO'
+              : 'DEVELOPMENT PREVIEW'}
+          </span>
         </header>
         <main id="main-content" tabIndex={-1}>
           {children}
@@ -132,4 +171,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
     </div>
   )
+}
+
+function plannedTitle(path: string) {
+  if (path === '/system') return 'Connection status'
+  return upcoming.find((item) => item.path === path)?.label ?? 'Overview'
 }

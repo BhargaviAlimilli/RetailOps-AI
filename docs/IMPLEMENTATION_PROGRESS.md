@@ -81,3 +81,13 @@
 - Generated a unique local demo password in ignored `backend/.env`; the value was neither printed nor committed. Accounts: `manager@retailops.demo`, `analyst@retailops.demo`, `admin@retailops.demo`.
 - Actual `retailops_demo` migration and seed succeeded; second seed reported already seeded with no changes.
 - Full backend verification after integration: Ruff lint passed, 41 Python files formatted, **59 tests passed**, and `alembic check` reported no new upgrade operations. Real integration checks executed with local PostgreSQL; no skipped tests in this run.
+
+## 2026-10-19 - Phase 2d: integrated retail workspace
+
+- `4bd86ad` adds in-memory Redux sessions, validated React Hook Form/Zod sign-in, bearer API client, logout/cache clearing and a protected-route foundation.
+- Connected dashboard, sales, products, inventory, suppliers, purchases and settings behind sign-in. TanStack Query owns server data. Added reusable tables, accessible focus-trapped dialogs, real filters/pagination, loading/error/empty states and explicit decision/receipt forms.
+- Catalog creation, inventory adjustments and purchase state actions update real PostgreSQL through validated APIs. Read-only analyst screens are backed by server write denial.
+- Route-level lazy imports keep charts/forms out of initial sign-in load; production build has no oversized-chunk warning. Initial shared JS is about 328 kB before compression; dashboard chart chunk about 357 kB. These are build sizes, not fabricated runtime performance claims.
+- Frontend checks after integration: lint/typecheck, **19 unit/component/API tests passed**, split production build. Real browser verification: **6 tests passed** across desktop/mobile, including live revenue equality with API, draft/submit/approve/receive, audited stock changes and analyst UI/API denial. Browser tests are sequential against shared synthetic data; concurrency is separately tested with isolated schemas.
+- Visually reviewed dashboard and completed purchase screenshots; corrected encoded punctuation and disabled chart reveal animations so captures show complete data. Generated traces/reports remain ignored.
+- Phase 2 essential local retail behavior is verified. Gemini was selected by the user; Phase 3 provider/conversation/SSE work is next. No model output, citations, agents, deployment or interview-ready AI demonstration is claimed yet.
