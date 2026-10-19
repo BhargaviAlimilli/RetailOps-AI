@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from alembic import context
 from app.core.config import Settings
+from app.db.models import Base
 
 config = context.config
 settings = Settings()
@@ -15,7 +16,7 @@ url = settings.database_url.get_secret_value()
 
 
 def run_migrations(connection):
-    context.configure(connection=connection, target_metadata=None)
+    context.configure(connection=connection, target_metadata=Base.metadata, compare_type=True)
     with context.begin_transaction():
         context.run_migrations()
 
@@ -30,7 +31,7 @@ async def run_online():
 
 
 if context.is_offline_mode():
-    context.configure(url=url, target_metadata=None, literal_binds=True)
+    context.configure(url=url, target_metadata=Base.metadata, literal_binds=True)
     with context.begin_transaction():
         context.run_migrations()
 else:
