@@ -3,9 +3,11 @@ import { ShieldCheck } from 'lucide-react'
 import { useAuth } from '../auth/AuthProvider'
 import { PageHeading, Panel } from '../retail/shared'
 import '../retail/retail.css'
+import { useAIStatus } from '../../services/health'
 
 export function SettingsPage() {
   const { user } = useAuth()
+  const ai = useAIStatus()
   return (
     <>
       <PageHeading
@@ -36,6 +38,24 @@ export function SettingsPage() {
           Approval records and stock changes retain the responsible account and
           an audit history.
         </p>
+      </Panel>
+      <Panel title="AI Companion">
+        <p className="subheading">
+          {ai.isPending
+            ? 'Checking configuration...'
+            : ai.isError
+              ? 'Configuration status unavailable.'
+              : ai.data?.configured
+                ? `Gemini configured: ${ai.data.model}`
+                : 'Gemini is not configured. Provider credentials are managed on the server.'}
+        </p>
+        <p className="subheading">
+          Business data tools and document retrieval are not connected yet. The
+          Companion can explain general concepts once Gemini is configured.
+        </p>
+        <Link className="button" to="/assistant">
+          Open AI Companion
+        </Link>
       </Panel>
       <Panel title="Workspace availability">
         <p className="subheading">

@@ -98,6 +98,68 @@ describe('assistant stream recovery', () => {
     )
     expect(streamMessage).not.toHaveBeenCalled()
   })
+  it('labels replies that reached the model output limit', async () => {
+    vi.mocked(streamMessage).mockImplementation(
+      async (_conversation, _content, requestId, _signal, onEvent) => {
+        onEvent({
+          type: 'message.completed',
+          conversation_id: conversationId,
+          message_id: '33333333-3333-4333-8333-333333333333',
+          request_id: requestId,
+          sequence: 1,
+          payload: {
+            content: 'A partial explanation',
+            finish_reason: 'MAX_TOKENS',
+          },
+        })
+      },
+    )
+    setup()
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'Explain purchasing' },
+    })
+    await userEvent.click(screen.getByRole('button', { name: 'Send message' }))
+    expect(
+      await screen.findByText(
+        'Reply reached the output limit. Ask a follow-up question to continue.',
+      ),
+    ).toBeInTheDocument()
+  })
+  it('labels an output-limited reply loaded from persisted history', async () => {
+    vi.mocked(conversations.list).mockResolvedValue([
+      {
+        id: conversationId,
+        title: 'Saved conversation',
+        created_at: '2026-10-19T00:00:00Z',
+        updated_at: '2026-10-19T00:00:00Z',
+      },
+    ])
+    vi.mocked(conversations.messages).mockResolvedValue([
+      {
+        id: '33333333-3333-4333-8333-333333333333',
+        conversation_id: conversationId,
+        request_id: '22222222-2222-4222-8222-222222222222',
+        role: 'assistant',
+        content: 'Saved limited output',
+        status: 'completed',
+        created_at: '2026-10-19T00:00:00Z',
+        updated_at: '2026-10-19T00:00:00Z',
+        usage: null,
+        error_code: null,
+        finish_reason: 'MAX_TOKENS',
+      },
+    ])
+    setup()
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Saved conversation' }),
+    )
+    expect(
+      await screen.findByText(
+        'Reply reached the output limit. Ask a follow-up question to continue.',
+      ),
+    ).toBeInTheDocument()
+    expect(streamMessage).not.toHaveBeenCalled()
+  })
   it('keeps provider configuration failures honest and offers recovery', async () => {
     vi.mocked(streamMessage).mockRejectedValue(
       new Error(

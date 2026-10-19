@@ -26,7 +26,7 @@ const upcoming = [
   { label: 'Suppliers', icon: Building2, path: '/suppliers' },
   { label: 'Purchase Orders', icon: ShoppingCart, path: '/purchase-orders' },
   { label: 'Documents', icon: FileText, path: null },
-  { label: 'AI Companion', icon: Sparkles, path: null },
+  { label: 'AI Companion', icon: Sparkles, path: '/assistant' },
   { label: 'Settings', icon: Settings2, path: '/settings' },
 ]
 

@@ -15,6 +15,7 @@ type Attempt = {
   text: string
   state: 'streaming' | 'stopped' | 'error' | 'completed'
   error?: string
+  finishReason?: string | null
 }
 const prompts = [
   'How should I investigate low stock?',
@@ -86,6 +87,7 @@ export default function AssistantPage() {
             old
               ? {
                   ...old,
+                  finishReason: event.payload.finish_reason ?? old.finishReason,
                   text:
                     event.type === 'message.delta'
                       ? old.text + (event.payload.text ?? '')
@@ -154,7 +156,10 @@ export default function AssistantPage() {
           <h1>
             AI Companion <span>Gemini</span>
           </h1>
-          <p>Think through your next retail decision.</p>
+          <p>
+            General retail guidance. Live business data tools and document
+            retrieval are not connected yet.
+          </p>
         </div>
         <span className="ai-private">
           <Sparkles size={15} /> Your workspace assistant
@@ -280,6 +285,12 @@ export default function AssistantPage() {
                         </button>
                       </div>
                     )}
+                  {message.finish_reason === 'MAX_TOKENS' && (
+                    <p className="ai-message-note">
+                      Reply reached the output limit. Ask a follow-up question
+                      to continue.
+                    </p>
+                  )}
                   {message.status !== 'completed' && (
                     <p className="ai-message-note">
                       {message.status === 'cancelled'
@@ -295,6 +306,12 @@ export default function AssistantPage() {
               <>
                 <AIMessage role="user" content={currentAttempt.content} />
                 <AIMessage role="assistant" content={currentAttempt.text}>
+                  {currentAttempt.finishReason === 'MAX_TOKENS' && (
+                    <p className="ai-message-note">
+                      Reply reached the output limit. Ask a follow-up question
+                      to continue.
+                    </p>
+                  )}
                   {currentAttempt.state === 'streaming' && (
                     <StreamingMessage
                       text={

@@ -19,6 +19,7 @@ export const messageSchema = z.object({
   created_at: z.string(),
   updated_at: z.string(),
   error_code: z.string().nullable(),
+  finish_reason: z.string().nullable().optional(),
   usage: z
     .object({
       input_tokens: z.number(),
@@ -40,6 +41,7 @@ const eventSchema = z.object({
       content: z.string().optional(),
       message: z.string().optional(),
       code: z.string().optional(),
+      finish_reason: z.string().nullable().optional(),
     })
     .passthrough(),
 })

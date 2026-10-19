@@ -47,7 +47,7 @@ describe('workspace foundation', () => {
     expect(
       screen.getByText('No operational metrics are displayed yet.'),
     ).toBeInTheDocument()
-    expect(screen.getByText('Not configured')).toBeInTheDocument()
+    expect(screen.getByText('Sign in to view')).toBeInTheDocument()
   })
   it('renders database errors and supports retry', async () => {
     const fetchMock = vi.fn((path: string) =>

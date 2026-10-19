@@ -10,13 +10,16 @@ import {
   ShieldCheck,
   Sparkles,
 } from 'lucide-react'
-import { useHealth, useReadiness } from '../../services/health'
+import { useAIStatus, useHealth, useReadiness } from '../../services/health'
+import { selectUser, useAppSelector } from '../../store'
 import { Button } from '../../components/ui/Button'
 
 export function Overview() {
+  const user = useAppSelector(selectUser)
+  const ai = useAIStatus()
   const health = useHealth()
   const readiness = useReadiness()
-  const checking = health.isFetching || readiness.isFetching
+  const checking = health.isFetching || readiness.isFetching || ai.isFetching
   const date = new Intl.DateTimeFormat(undefined, {
     month: 'long',
     day: 'numeric',
@@ -86,6 +89,7 @@ export function Overview() {
           onClick={() => {
             void health.refetch()
             void readiness.refetch()
+            if (user) void ai.refetch()
           }}
         >
           <RefreshCw size={15} className={checking ? 'spin' : ''} />
@@ -124,14 +128,31 @@ export function Overview() {
             <span className="card-icon">
               <Sparkles size={20} />
             </span>
-            <span className="status-badge neutral">Not configured</span>
+            <span
+              className={`status-badge ${ai.data?.configured ? 'success' : 'neutral'}`}
+            >
+              {!user
+                ? 'Sign in to view'
+                : ai.isPending
+                  ? 'Checking'
+                  : ai.isError
+                    ? 'Unavailable'
+                    : ai.data?.configured
+                      ? 'Configured'
+                      : 'Not configured'}
+            </span>
           </div>
           <h3>AI Companion</h3>
           <p>
-            AI integration will be available after the core operations workspace
-            is ready.
+            {!user
+              ? 'Sign in to review the Gemini configuration and your saved conversations.'
+              : ai.data?.configured
+                ? 'Gemini configuration is present. This status does not make a model call.'
+                : 'Configure Gemini before requesting a reply. Saved conversations remain available.'}
           </p>
-          <span className="card-footnote">No model connected</span>
+          <span className="card-footnote">
+            {ai.data?.model ?? 'Provider credentials stay on the server'}
+          </span>
         </article>
       </div>
       <section className="operations-panel">
