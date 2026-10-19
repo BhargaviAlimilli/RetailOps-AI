@@ -1,22 +1,30 @@
 from collections.abc import AsyncIterator
 from typing import Annotated
 
+import structlog
 from fastapi import Depends, HTTPException, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.exc import TimeoutError as PoolTimeoutError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.db.models import User
 from app.repositories.auth import authenticated_user
 
 bearer = HTTPBearer(auto_error=False)
+logger = structlog.get_logger(__name__)
 
 
 async def get_session(request: Request) -> AsyncIterator[AsyncSession]:
     engine = request.app.state.database.engine
     if engine is None:
         raise HTTPException(503, "Database unavailable")
-    async with async_sessionmaker(engine, expire_on_commit=False)() as session:
-        yield session
+    try:
+        async with async_sessionmaker(engine, expire_on_commit=False)() as session:
+            yield session
+    except (OperationalError, PoolTimeoutError, TimeoutError, OSError) as error:
+        logger.warning("database_unavailable", error_type=type(error).__name__)
+        raise HTTPException(503, "Database temporarily unavailable") from None
 
 
 async def bearer_token(

@@ -1,11 +1,12 @@
 import uuid
 from typing import Annotated, Literal
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, ConfigDict, Field, SecretStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import bearer_token, current_user, get_session
+from app.core.auth_limits import login_limiter
 from app.db.models import User
 from app.services import auth as service
 
@@ -33,7 +34,14 @@ class LoginResponse(BaseModel):
 
 
 @router.post("/login", response_model=LoginResponse)
-async def login(body: LoginInput, session: Annotated[AsyncSession, Depends(get_session)]):
+async def login(
+    body: LoginInput, request: Request, session: Annotated[AsyncSession, Depends(get_session)]
+):
+    # Use the connected peer; forwarding headers require trusted-proxy deployment configuration.
+    if not login_limiter.allow(request.client.host if request.client else "unknown", body.email):
+        raise HTTPException(
+            429, "Too many login attempts; retry shortly", headers={"Retry-After": "60"}
+        )
     token, user = await service.login(session, body.email, body.password.get_secret_value())
     return LoginResponse(access_token=token, user=UserResponse.model_validate(user))
 

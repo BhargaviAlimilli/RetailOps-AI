@@ -33,6 +33,12 @@ def db_url():
             admin.execute("CREATE DATABASE retailops_test")
     schema = "test_" + uuid.uuid4().hex
     plain_url = test_url.set(drivername="postgresql").render_as_string(hide_password=False)
+    # Extensions belong to the durable public schema, not a schema dropped by another test.
+    # Serialize extension setup across concurrent pytest processes on this disposable DB.
+    with psycopg.connect(plain_url) as connection:
+        connection.execute("SELECT pg_advisory_xact_lock(842718202)")
+        connection.execute("CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA public")
+        connection.execute("ALTER EXTENSION vector SET SCHEMA public")
     with psycopg.connect(plain_url, autocommit=True) as connection:
         connection.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(schema)))
     url = test_url.update_query_dict(

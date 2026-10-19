@@ -1,4 +1,3 @@
-import asyncio
 import secrets
 from datetime import UTC, datetime, timedelta
 
@@ -6,7 +5,8 @@ from fastapi import HTTPException
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import hash_password, token_hash, verify_password
+from app.core.auth_limits import verify_password_bounded
+from app.core.security import hash_password, token_hash
 from app.db.models import AuditLog, Session, User
 from app.repositories.auth import user_by_email
 
@@ -16,9 +16,7 @@ DUMMY_HASH = hash_password(secrets.token_urlsafe(32))
 
 async def login(session: AsyncSession, email: str, password: str) -> tuple[str, User]:
     user = await user_by_email(session, email.strip().lower())
-    valid = await asyncio.to_thread(
-        verify_password, password, user.password_hash if user else DUMMY_HASH
-    )
+    valid = await verify_password_bounded(password, user.password_hash if user else DUMMY_HASH)
     if user is None or not valid:
         raise HTTPException(
             401, "Invalid email or password", headers={"WWW-Authenticate": "Bearer"}

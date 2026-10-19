@@ -2,6 +2,7 @@ import asyncio
 
 import structlog
 from sqlalchemy import text
+from sqlalchemy.engine import make_url
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
@@ -15,12 +16,18 @@ class Database:
         self.timeout = settings.database_timeout_seconds
         self.engine: AsyncEngine | None = None
         if settings.database_url is not None:
+            url = make_url(settings.database_url.get_secret_value())
+            options = str(url.query.get("options", ""))
             self.engine = create_async_engine(
-                settings.database_url.get_secret_value(),
+                url,
                 pool_pre_ping=True,
                 pool_size=5,
                 max_overflow=5,
-                connect_args={"connect_timeout": max(1, int(self.timeout))},
+                pool_timeout=self.timeout,
+                connect_args={
+                    "connect_timeout": max(1, int(self.timeout)),
+                    "options": options + f" -cstatement_timeout={max(1, int(self.timeout * 1000))}",
+                },
             )
 
     async def is_ready(self) -> bool:
