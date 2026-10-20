@@ -1,0 +1,11 @@
+{
+  "status": "failed",
+  "reason": "unexpected_verification_error",
+  "source_searches": 1,
+  "chat_submissions": 1,
+  "saved_replays": 0,
+  "saved_messages": 2,
+  "citations": 3,
+  "tool_steps": 1,
+  "screenshots": 2
+}

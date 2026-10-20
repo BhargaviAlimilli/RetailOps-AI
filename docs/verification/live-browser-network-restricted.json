@@ -1,0 +1,12 @@
+{
+  "status": "failed",
+  "reason": "source_search_http_503",
+  "source_searches": 1,
+  "chat_submissions": 0,
+  "saved_replays": 0,
+  "saved_messages": 0,
+  "citations": 0,
+  "tool_steps": 0,
+  "screenshots": 2,
+  "environment_note": "API server was running without upstream network access; root restarted it with explicit network access before the next authorized verification."
+}

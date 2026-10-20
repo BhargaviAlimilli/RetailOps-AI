@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "mode": "generated_turn_plus_read_only_recovery",
+  "verified_date": "2026-10-20",
+  "model": "gemini-3.1-flash-lite",
+  "source_searches": 1,
+  "chat_submissions": 1,
+  "generation_requests_for_completed_turn": 2,
+  "saved_replays": 1,
+  "saved_messages": 2,
+  "citations": 3,
+  "tool_steps": 1,
+  "screenshots": 4,
+  "revenue_matches_database": true,
+  "citation_excerpts_match_sources": true,
+  "clipboard_matches_saved_answer": true,
+  "new_paid_calls_in_recovery": 0,
+  "usage": {
+    "input_tokens": 2799,
+    "output_tokens": 105,
+    "total_tokens": 2904
+  },
+  "notes": "The generated turn completed successfully. The original harness compared raw Markdown with rendered text and timed out; the assertion was fixed, then the existing answer, UI, clipboard and replay were verified without another generation or embedding request. Historical failure artifacts are retained separately."
+}

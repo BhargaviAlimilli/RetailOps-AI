@@ -1,0 +1,13 @@
+# Verification evidence
+
+`live-browser.json` records the successful real generated turn plus its read-only UI/replay verification on 2026-10-20. The answer used an actual sales tool and three persisted citations. Revenue matches the database report, citation excerpts match owned sources, copying preserves the answer, and desktop/mobile screenshots and saved replay pass. `live-saved-answer.json` records the recovery checks with zero new paid calls. Earlier provider/network failures and the original Markdown assertion timeout are retained as historical artifacts.
+
+The successful embedding smoke is recorded in `backend/fixtures/data/documents/evaluation_live.json`: three fictional documents, two queries and five actual embedding HTTP requests. Those two correct first results are a smoke check, not a representative retrieval benchmark. `evaluation_mock.json` explicitly uses deterministic mock semantic rankings to compare algorithm plumbing and cannot establish live semantic quality or answer faithfulness.
+
+The final backend suite passed **135 tests with zero skips**, with real PostgreSQL and its opt-in readiness probe enabled. Forty-five frontend tests and twelve real cost-free browser cases passed. Browser cases include real PostgreSQL purchasing/inventory operations, checkpointed explicit approval, replay and backend analyst denial. Unit tests substitute paid providers; database integration fixtures use isolated PostgreSQL schemas.
+
+The native provider's minimal stream succeeded with three model records over nine network chunks. The full grounded turn then succeeded after fixing rejection of Gemini's additive `serviceTier` metadata. Its two generation requests used 2,799 input and 105 output tokens (2,904 total), with a measured server duration of 7,172 ms in this one run. This is not a representative latency or accuracy benchmark. The original browser harness compared raw Markdown to rendered text; read-only verification completed after correcting that assertion and waiting for asynchronous clipboard completion. Do not present component fixtures or error screenshots as generated responses. No measured monetary cost is claimed.
+
+Ordinary tests/CI require no model key. `backend/scripts/verify_live_ai.py`, `backend/scripts/verify_live_rag.py` and `frontend/scripts/verify-live.mjs` require explicit opt-in flags and prior paid-call authorization. They must not be added to unattended CI. The latest verification used a bounded approved budget and stopped on failure without automatic retries.
+
+See `docs/IMPLEMENTATION_PROGRESS.md` for exact scope, actual results and the remaining external-provider/deployment boundaries.
