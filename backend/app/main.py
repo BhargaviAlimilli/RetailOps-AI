@@ -20,6 +20,7 @@ from app.api.v1.retail import router as retail_router
 from app.core.config import Settings
 from app.core.logging import configure_logging
 from app.core.request_limits import RequestLimitsMiddleware
+from app.core.static import WebFiles
 from app.db.session import Database
 
 
@@ -93,6 +94,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(documents_router, prefix="/api/v1")
     application.include_router(retail_router, prefix="/api/v1")
     application.include_router(purchasing_router, prefix="/api/v1")
+    if settings.web_directory is not None:
+        application.mount("/", WebFiles(directory=settings.web_directory), name="web")
     return application
 
 

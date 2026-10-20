@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import Field, SecretStr, field_validator
+from pydantic import DirectoryPath, Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     demo_password: SecretStr | None = Field(default=None, min_length=12, max_length=256)
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
     allowed_hosts: list[str] = Field(default_factory=lambda: ["localhost", "127.0.0.1", "[::1]"])
+    web_directory: DirectoryPath | None = None
     database_timeout_seconds: float = Field(default=3, gt=0, le=30)
     ai_provider: Literal["disabled", "gemini"] = "disabled"
     gemini_api_version: Literal["v1", "v1beta"] = "v1"

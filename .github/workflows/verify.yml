@@ -124,6 +124,8 @@ jobs:
         run: docker build --tag retailops-api:check backend
       - name: Verify frontend image builds
         run: docker build --tag retailops-web:check frontend
+      - name: Verify combined free-demo image builds
+        run: docker build --file infra/Dockerfile.demo --tag retailops-demo:check .
   secrets:
     runs-on: ubuntu-latest
     steps:
