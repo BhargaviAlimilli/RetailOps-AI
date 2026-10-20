@@ -14,7 +14,7 @@ Each milestone is independently reviewed, checked and committed. Finish essentia
 ## Dependencies and approval boundaries
 - Available: Node 24.19, Python 3.12, Git, Docker CLI 29.4.
 - Required locally: frontend npm dependencies, isolated backend environment, working PostgreSQL with pgvector.
-- Docker Desktop currently reports that it cannot start; do not claim database integration passes until this is resolved.
-- Later: Gemini or OpenAI credentials and embedding model selection; explicit authorization before paid calls.
+- Docker Desktop was recovered; local PostgreSQL migrations and isolated integration tests now run.
+- Gemini credentials/models are configured locally; bounded live development calls were explicitly authorized. See the progress log for actual results and limits.
 - Later deployment: GCP project, billing, Cloud SQL, Secret Manager and deployment approval. No cloud provisioning now.
 - Local commits are authorized; remote pushes require separate explicit approval.

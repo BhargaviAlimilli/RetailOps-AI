@@ -6,11 +6,15 @@ A retail operations application being built incrementally for a senior full-stac
 
 The local core retail application is functional: sign-in and backend roles, database-calculated dashboard, product catalog/creation, supplier terms, inventory filters/audited adjustments, sales reporting, and purchase drafts with explicit approval and receiving. Reports and actions use PostgreSQL rather than static fixtures in the UI. The demo data is clearly synthetic.
 
-AI Companion now includes private persisted conversations, a Gemini adapter, authenticated SSE streaming, cancellation, replay protection and sanitized Markdown. Local tests use a substituted provider; a real Gemini response has not been verified. RAG, agent tools/checkpoints, CI/cloud deployment and interview-ready end-to-end AI demonstrations are not complete. See [verified progress](docs/IMPLEMENTATION_PROGRESS.md), [AI contracts and limits](backend/AI.md) and [implementation plan](docs/IMPLEMENTATION_PLAN.md).
+AI Companion includes private persisted conversations, Gemini integration, authenticated SSE, cancellation/replay, read-only operational tools and sanitized Markdown. Private text/Markdown documents support real Gemini embeddings, PostgreSQL vector search, BM25/RRF, optional deterministic reranking and source excerpts. The replenishment workspace uses durable LangGraph checkpoints and explicit manager approval. A reusable component lab, read-only MCP server, CI definition and container/cloud deployment configurations are included. See [verified progress](docs/IMPLEMENTATION_PROGRESS.md), [AI contracts](backend/AI.md) and [retrieval details](backend/RAG.md) for actual checks and remaining verification limits.
 
 ![Retail dashboard](docs/screenshots/retail-dashboard-desktop.png)
 
 ![Internal purchase approval and receiving](docs/screenshots/purchase-received-desktop.png)
+
+![Checkpointed replenishment and explicit approval](docs/screenshots/agent-approved-desktop.png)
+
+![Real Gemini answer with operational evidence and citations](docs/screenshots/assistant-live-desktop.png)
 
 ## Local setup (PowerShell)
 
@@ -55,6 +59,14 @@ Copy `backend/.env.example` to `backend/.env`. Never commit local environment fi
 | `RETAILOPS_CORS_ORIGINS` | JSON array of explicit permitted browser origins |
 | `RETAILOPS_ALLOWED_HOSTS` | JSON array of accepted API hostnames; defaults to localhost/loopback |
 | `RETAILOPS_DATABASE_TIMEOUT_SECONDS` | Readiness probe deadline; default 3 seconds |
+| `RETAILOPS_AI_PROVIDER` | `disabled` by default; `gemini` enables explicitly authorized model use |
+| `RETAILOPS_GEMINI_API_KEY` | Local server-only Gemini credential; never expose to the frontend |
+| `RETAILOPS_AI_MODEL` | Explicit account-enabled model; verified configuration uses `gemini-3.1-flash-lite` |
+| `RETAILOPS_GEMINI_API_VERSION` | `v1` default; stable API schema conversion is applied |
+| `RETAILOPS_GEMINI_STREAM_TRANSPORT` | `json` native incremental JSON stream by default; optional SDK `sse` transport |
+| `RETAILOPS_RAG_ENABLED` | `false` default; enables authorized embedding ingestion/search when set to `true` |
+| `RETAILOPS_GEMINI_EMBEDDING_MODEL` | `gemini-embedding-001`, using normalized 768-dimensional vectors |
+| `RETAILOPS_AI_MAX_OUTPUT_TOKENS`, `RETAILOPS_AI_MAX_RETRIES` | Default 1,024 output tokens and one pre-output retry; live checks use zero retries |
 | `POSTGRES_PASSWORD`, `POSTGRES_PORT` | Root Compose settings; local defaults shown in `.env.example` |
 
 Use IPv4 `127.0.0.1` for the database on this Windows host; `localhost` caused a stalled connection during initial verification. If overriding Compose credentials/port, update the backend URL to match. Named-volume data persists across container restarts. The seed refuses non-development environments, any database name except `retailops_demo`, and unrecognized nonempty data. Repeating it preserves an already seeded workspace.
@@ -102,8 +114,18 @@ Browser tests use real services rather than intercepted responses and capture de
 - [Architecture and trade-offs](ARCHITECTURE.md)
 - [Development conventions](AGENTS.md)
 
-The core retail app is locally verified, but the full AI interview demonstration is unfinished. Real Gemini streaming verification, document ingestion/retrieval/citations, LangGraph, AI purchase proposals, MCP showcase, CI and deployment remain. AI Companion currently provides general guidance only; it has no operational tools or document access. The current explicit human purchase approval workflow works independently of AI. No model call, external supplier order, cloud resource or production deployment has been performed.
+The local end-to-end demonstration is verified: actual Gemini tool selection reads database sales, streams a cited answer, persists it, displays it on desktop/mobile and replays the saved answer without another generation. Revenue and citation excerpts were checked against PostgreSQL/source documents. Retail transactions and checkpointed human approval also pass integration/browser checks. Provider availability remains external, and these checks do not establish general answer accuracy. No external supplier order, cloud resource or production deployment has been performed. CI is prepared locally and has not been run on GitHub because no remote push is authorized.
 
 Security is enforced in the API and services, including analyst write denial, audited transactions, validated authoritative supplier pricing, idempotency/concurrency checks, request/database limits and secret-safe errors. See [security assumptions](SECURITY.md) and [backend safeguards](backend/SECURITY.md). The demo is a single organization; all authenticated roles can read its operational data and supplier costs. Do not expose development servers publicly. Distributed rate limiting, HTTPS/proxy configuration, hardened deployment accounts and production secret management are deployment work.
 
-The planned deployment design uses Cloud Run, Cloud SQL and Secret Manager. Provisioning and remote pushes require separate explicit approval. The user's selected AI provider is Gemini; credentials and approval for any paid verification calls will be requested only once the integration is concrete and reviewable.
+Deployment preparations use Cloud Run, Cloud SQL and Secret Manager; provisioning, remote pushes and deployment still require explicit approval. Use the [deployment guide](docs/deployment/DEPLOYMENT.md), [MCP setup](docs/mcp/README.md), [15-minute demo](docs/interviews/PWC_DEMO.md) and [technical Q&A](docs/interviews/TECHNICAL_QA.md).
+
+## Knowledge and agent demonstration
+
+Open Documents to paste a policy or upload UTF-8 `.txt`/`.md` files up to 100,000 bytes. Documents belong to their uploader; search and source previews enforce that ownership. PDF/binary parsing is deliberately unsupported. Three clearly fictional policies and a question dataset live in `backend/fixtures/data/documents/`. The guarded live retrieval script has indexed these for the local demo manager; creating documents in a new setup requires explicitly authorized embedding calls.
+
+Open Replenishment to select a store, product and associated supplier. The graph reads actual sales, available stock, open orders and supplier terms, retrieves accessible policy evidence, calculates demand/pack/minimum quantities and creates a pending internal proposal. It pauses at a saved LangGraph interrupt. Only an authenticated manager/admin can explicitly approve or reject; conversational agreement cannot authorize an action. Receiving remains a separate audited purchase-order action. A failed run can resume its saved checkpoint without duplicating the order.
+
+The AI Engineering Lab contains explicitly labelled component fixtures, including message/code copying, citations, tool traces, structured specifications and a display-only diff. They do not execute model-generated code or claim fixture text is real model output.
+
+Offline retrieval comparison: `cd backend; .venv/Scripts/python scripts/evaluate_rag.py`. Its mock semantic rankings are clearly labelled; the separate live smoke artifact records only two successful test queries and does not establish general answer quality. Live verification scripts require explicit approval and `--allow-model-call` or `--allow-model-calls`; ordinary tests and CI never need paid APIs.
