@@ -75,7 +75,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="workspace-switch">
           <span className="workspace-avatar">R</span>
           <div>
-            Retail workspace<small>Local environment</small>
+            Retail workspace<small>Demo environment</small>
           </div>
           <ChevronRight size={16} />
         </div>
@@ -127,7 +127,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             Sales, stock, and supplier knowledge in one connected workspace.
           </p>
           <span className="preview-label">
-            Development preview <ArrowUpRight size={13} />
+            Portfolio demonstration <ArrowUpRight size={13} />
           </span>
         </div>
         {user && (
@@ -149,7 +149,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         )}
         <footer className="sidebar-footer">
           <span className="environment-dot" />
-          Local workspace<span>v0.1</span>
+          Demo workspace<span>v0.1</span>
         </footer>
       </aside>
       <div className="main-shell">

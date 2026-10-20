@@ -106,8 +106,8 @@ export function LoginPage() {
             </button>
           </form>
           <p className="auth-help">
-            Use an account configured by your administrator. Demo accounts
-            become available after running the documented local seed command.
+            Use an account configured by your administrator. Demo accounts are
+            provided separately by your administrator.
           </p>
           <a className="auth-status" href="/system">
             View system connection status <ArrowRight size={14} />

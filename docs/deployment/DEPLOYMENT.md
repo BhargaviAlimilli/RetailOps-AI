@@ -1,6 +1,6 @@
 # Deployment and local container preview
 
-These are build and deployment preparations. No GCP resource has been provisioned, no cloud deployment has been executed, and no paid model request is part of CI. Cloud manifests contain deliberate `REPLACE_*` values and must be reviewed before use.
+The authorized portfolio deployment uses [Render Free and Neon Free](FREE_DEMO.md). The GCP files below remain optional preparations: no paid GCP resource has been provisioned, and no paid model request is part of CI. Cloud manifests contain deliberate `REPLACE_*` values and must be reviewed before use.
 
 ## Local synthetic preview
 
@@ -44,4 +44,4 @@ After explicit approval, an operator would create/review the project resources, 
 
 ## CI
 
-`.github/workflows/verify.yml` defines frontend formatting/lint/type/tests/build/audit, backend lint/format/tests/audit with real pgvector PostgreSQL, seeded Playwright journeys, Docker image builds, and Git history secret scanning. No deployment job or cloud credentials are configured. Browser traces are retained for only three days on failure and use synthetic data. A workflow definition is not evidence that GitHub-hosted execution has passed; local results remain recorded separately by the implementation log.
+`.github/workflows/verify.yml` defines frontend formatting/lint/type/tests/build/audit, backend lint/format/tests/audit with real pgvector PostgreSQL, seeded Playwright journeys, Docker image builds, and Git history secret scanning. No deployment job or cloud credentials are configured. Browser traces are retained for only three days on failure and use synthetic data. [GitHub run 39369509186](https://github.com/BhargaviAlimilli/RetailOps-AI/actions/runs/39369509186) passed all five jobs for commit `0647d95`; later releases must retain their own verification evidence.

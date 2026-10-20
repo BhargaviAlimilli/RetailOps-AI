@@ -1,5 +1,7 @@
 # Free demonstration hosting
 
+Live HTTPS URL: **https://retailops-ai-bhargavi.onrender.com**. Render service ID: `srv-dbbeq1m7bikc738aclig`. The first release is commit `0647d95`; [55 deployed HTTPS checks](../verification/deployment.json) and [all five hosted CI jobs](https://github.com/BhargaviAlimilli/RetailOps-AI/actions/runs/39369509186) passed. Gemini remains disabled as approved.
+
 The user selected free hosting plans with a US$1 monthly budget. The Cloud Run / Cloud SQL design remains an optional paid architecture; Cloud SQL is not used for this release. Budget alerts do not impose a spending cap.
 
 ## Release layout
