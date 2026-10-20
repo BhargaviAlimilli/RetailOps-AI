@@ -1,8 +1,8 @@
 {
   "status": "passed",
   "url": "https://retailops-ai-bhargavi.onrender.com",
-  "verified_at_utc": "2026-10-20T04:28:13.595233+00:00",
-  "source_commit": "0647d956f1fed2283f746b02ed217f58171941f3",
+  "verified_at_utc": "2026-10-20T04:34:49.448624+00:00",
+  "source_commit": "4a0244aedec0fc17c701a387d7413b1f868c7f8d",
   "hosting": {
     "web": "Render Free",
     "database": "Neon Free PostgreSQL 17",
@@ -66,5 +66,18 @@
     "admin AI disabled",
     "admin logout",
     "admin revoked token denied"
-  ]
+  ],
+  "render_service_id": "srv-dbbeq1m7bikc738aclig",
+  "render_deploy_id": "dep-dbbetmjrjlhs73e1dktg",
+  "ci_run_url": "https://github.com/BhargaviAlimilli/RetailOps-AI/actions/runs/39370145943",
+  "ci_status": "success",
+  "ci_jobs": [
+    "backend",
+    "frontend",
+    "containers",
+    "secrets",
+    "browser"
+  ],
+  "browser_manager_login": "passed",
+  "deployed_ui_bundle": "/assets/index-C0xpNVA0.js"
 }
