@@ -9,7 +9,7 @@ description = "RetailOps AI operations API"
 requires-python = ">=3.12"
 dependencies = [
   "fastapi>=0.115,<1", "uvicorn[standard]>=0.34,<1",
-  "pydantic-settings>=2.7,<3", "sqlalchemy[asyncio]>=2.0.38,<2.1",
+  "pydantic>=2.14,<3", "pydantic-settings>=2.7,<3", "sqlalchemy[asyncio]>=2.0.38,<2.1",
   "psycopg[binary]>=3.2,<4", "alembic>=1.14,<2", "structlog>=25,<27",
   "google-genai>=1.75,<2",
   "pgvector>=0.4,<0.5",
