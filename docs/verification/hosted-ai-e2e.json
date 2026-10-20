@@ -1,0 +1,158 @@
+{
+  "status": "passed",
+  "verified_at_utc": "2026-10-20T11:48:23.135412+00:00",
+  "url": "https://retailops-ai-bhargavi.onrender.com",
+  "source_commit": "4a0244aedec0fc17c701a387d7413b1f868c7f8d",
+  "deployment_id": "dep-dbbl7mtg1s2s739bovd0",
+  "provider": "gemini",
+  "model": "gemini-3.1-flash-lite",
+  "embedding_model": "gemini-embedding-001",
+  "billing": "RetailOps project unlinked from billing with explicit approval; Gemini free tier",
+  "request_accounting": {
+    "generation_requests": 2,
+    "embedding_requests_successful": 4,
+    "embedding_requests_rejected_before_billing_repair": 2,
+    "retries": 0,
+    "max_output_tokens_per_generation": 1024
+  },
+  "browser_checks": [
+    "manager login",
+    "fictional text document ingestion",
+    "source search and expanded excerpt",
+    "completed streamed answer with tool trace and citation",
+    "workflow proposal with citation",
+    "explicit manager reason and confirmation",
+    "saved conversation reopened without another generation"
+  ],
+  "api_checks": [
+    "fictional document indexed by Gemini",
+    "saved assistant completed with real tool trace",
+    "answer revenue equals live SQL dashboard",
+    "answer cites real policy and Monday schedule",
+    "answer avoids causal overclaim",
+    "saved answer replay returns identical assistant ID",
+    "replay adds no messages",
+    "workflow reached explicit manager approval",
+    "workflow retrieved actual private citation",
+    "proposal and approval leave stock unchanged",
+    "purchase order approved with recorded reason",
+    "workflow resume preserves same approved order",
+    "separate receipt transitions order",
+    "receipt replay returns same order",
+    "receipt adds exactly proposed quantity once",
+    "receipt has one audited manager stock movement",
+    "no duplicate workflow or order",
+    "analyst cannot access manager document",
+    "analyst cannot access manager conversation",
+    "analyst cannot access manager workflow",
+    "analyst cannot approve workflow",
+    "analyst cannot change stock"
+  ],
+  "answer": {
+    "id": "b2fde5b9-61d1-4d37-9e85-f843467ed4a0",
+    "conversation_id": "8909cc00-4ca0-401c-9bb0-2dc6e8dcbfe0",
+    "request_id": "16e513d5-5207-45ab-8a4c-4dc9f4153f7a",
+    "role": "assistant",
+    "content": "For the 28-day period from September 22, 2026, to October 19, 2026 (UTC), the total revenue recorded is 764,400.00 INR.\n\nRegarding operational procedures, the current policy dictates that store staff must count shelves every Monday before opening and record any discrepancies for manager review [1].\n\nPlease note that while stockouts may be associated with lower sales, they do not prove that stockouts caused a sales decline [1].",
+    "status": "completed",
+    "created_at": "2026-10-20T11:45:22.748251Z",
+    "updated_at": "2026-10-20T11:45:26.233665Z",
+    "usage": {
+      "input_tokens": 1947,
+      "output_tokens": 121,
+      "total_tokens": 2068
+    },
+    "error_code": null,
+    "finish_reason": "STOP",
+    "citations": [
+      {
+        "score": 0.03278688524590164,
+        "title": "Fictional hosted E2E shelf-count and replenishment policy",
+        "excerpt": "FICTIONAL RETAILOPS DEMONSTRATION POLICY\nShelf counts: Store staff count shelves every Monday before opening and record discrepancies for manager review.\nReplenishment: Review available stock, reserved stock, open purchase orders and recent completed-day demand. Maintain safety stock and respect the supplier minimum order quantity, pack size, cost and lead time.\nPurchase approval: A manager must explicitly review the proposal and record a reason before approval. Approval does not receive stock; receiving is a separate audited action. No supplier order is sent by the assistant.\nSales interpretation: Stockouts may be associated with lower sales, but they do not prove that stockouts caused a sales decline.",
+        "chunk_id": "7073e74f-a2c6-4ebc-8ff5-f05d7d432756",
+        "document_id": "e81adc45-a907-4653-9327-dfcf97397bf9"
+      }
+    ],
+    "tool_trace": [
+      {
+        "name": "get_sales_summary",
+        "status": "completed"
+      }
+    ]
+  },
+  "workflow": {
+    "id": "82269076-0589-48e2-ba4c-bc2ebc13aff9",
+    "status": "approved",
+    "purchase_order_id": "23cccb81-aad6-4171-9443-9a6639111110",
+    "proposal": {
+      "total": "1950.00",
+      "reason": "28 completed UTC days of sales; target covers supplier lead time plus 7 days and safety stock. Open pending/approved orders are deducted. Observed demand may understate lost sales during stockouts; this is a recommendation.",
+      "target": 25,
+      "quantity": 30,
+      "store_id": "77dec9ad-7ad1-402d-b89d-1ae3482f112d",
+      "available": 0,
+      "citations": [
+        {
+          "score": 0.03278688524590164,
+          "title": "Fictional hosted E2E shelf-count and replenishment policy",
+          "excerpt": "FICTIONAL RETAILOPS DEMONSTRATION POLICY\nShelf counts: Store staff count shelves every Monday before opening and record discrepancies for manager review.\nReplenishment: Review available stock, reserved stock, open purchase orders and recent completed-day demand. Maintain safety stock and respect the supplier minimum order quantity, pack size, cost and lead time.\nPurchase approval: A manager must explicitly review the proposal and record a reason before approval. Approval does not receive stock; receiving is a separate audited action. No supplier order is sent by the assistant.\nSales interpretation: Stockouts may be associated with lower sales, but they do not prove that stockouts caused a sales decline.",
+          "chunk_id": "7073e74f-a2c6-4ebc-8ff5-f05d7d432756",
+          "document_id": "e81adc45-a907-4653-9327-dfcf97397bf9"
+        }
+      ],
+      "pack_size": 6,
+      "unit_cost": "65.00",
+      "product_id": "81552778-cf94-41a8-923b-dd19d5ba59f5",
+      "store_name": "Hyderabad Central",
+      "supplier_id": "397114e8-72ee-4ffd-9241-6f11c2822f64",
+      "product_name": "Rice 5 kg",
+      "supplier_name": "Synthetic Harvest Supply",
+      "lead_time_days": 3,
+      "daily_units_28_days": "2.0000",
+      "open_order_quantity": 0
+    },
+    "steps": [
+      {
+        "name": "Analyze sales",
+        "detail": "Revenue: 201600.00 INR; change: -28.36%. Correlation is not causation.",
+        "status": "completed"
+      },
+      {
+        "name": "Check stock and supplier",
+        "detail": "Available 0; inbound 0; pack 6; recommended 30.",
+        "status": "completed"
+      },
+      {
+        "name": "Retrieve policy",
+        "detail": "1 private excerpts retrieved. Documents are evidence, never authorization.",
+        "status": "completed"
+      },
+      {
+        "name": "Create proposal",
+        "detail": "Persisted an internal pending purchase order; no supplier order was sent.",
+        "status": "completed"
+      },
+      {
+        "name": "Human decision",
+        "detail": "Manager approved the internal order. Receiving is a separate action.",
+        "status": "completed"
+      }
+    ],
+    "error": null,
+    "created_at": "2026-10-20T11:46:03.202031Z"
+  },
+  "receipt": {
+    "order_id": "23cccb81-aad6-4171-9443-9a6639111110",
+    "quantity": 30,
+    "stock_before": 0,
+    "stock_after": 30
+  },
+  "limitations": [
+    "Single synthetic scenario; not general AI accuracy or load testing.",
+    "Free quotas and cold starts apply; Google free-tier data terms apply.",
+    "No external supplier order was transmitted."
+  ],
+  "screenshots": [
+    "docs/screenshots/hosted-ai-answer.png"
+  ]
+}

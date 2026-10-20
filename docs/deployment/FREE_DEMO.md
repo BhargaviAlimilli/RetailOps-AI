@@ -1,6 +1,6 @@
 # Free demonstration hosting
 
-Live HTTPS URL: **https://retailops-ai-bhargavi.onrender.com**. Render service ID: `srv-dbbeq1m7bikc738aclig`. The deployed application release is commit `4a0244a`; [55 deployed HTTPS checks](../verification/deployment.json) and [all five hosted CI jobs](https://github.com/BhargaviAlimilli/RetailOps-AI/actions/runs/39370145943) passed for that release. Gemini remains disabled as approved.
+Live HTTPS URL: **https://retailops-ai-bhargavi.onrender.com**. Render service ID: `srv-dbbeq1m7bikc738aclig`. The deployed application release is commit `4a0244a`; [55 deployed HTTPS checks](../verification/deployment.json) and [all five hosted CI jobs](https://github.com/BhargaviAlimilli/RetailOps-AI/actions/runs/39370145943) passed for that release. Gemini and RAG are now enabled and verified ([hosted AI E2E evidence](../verification/hosted-ai-e2e.json)).
 
 The user selected free hosting plans with a US$1 monthly budget. The Cloud Run / Cloud SQL design remains an optional paid architecture; Cloud SQL is not used for this release. Budget alerts do not impose a spending cap.
 
@@ -16,7 +16,11 @@ Render settings: public source repository `BhargaviAlimilli/RetailOps-AI`, branc
 
 Set `RETAILOPS_ENVIRONMENT=production`, exact `RETAILOPS_ALLOWED_HOSTS` / `RETAILOPS_CORS_ORIGINS`, `RETAILOPS_DATABASE_TIMEOUT_SECONDS=20`, and a secret `RETAILOPS_DATABASE_URL` using the direct TLS Neon endpoint. Direct connections also support migrations and durable checkpoints. Store the DSN only in the hosting environment and ignored local environment files; never in source or images.
 
-The first release leaves `RETAILOPS_AI_PROVIDER=disabled` and `RETAILOPS_RAG_ENABLED=false`. Gemini has separate metered usage and is not made free by choosing free hosting. Enabling it and verifying a live hosted answer requires an explicitly approved provider configuration and remaining paid-call allowance. Retail transactions, persisted conversations, MCP and checkpoint infrastructure remain implemented; AI-dependent actions report unavailable while disabled.
+The initial release disabled AI. With explicit approval, the deployed settings now enable `RETAILOPS_AI_PROVIDER=gemini` and `RETAILOPS_RAG_ENABLED=true`, using `gemini-3.1-flash-lite`, `gemini-embedding-001`, native JSON streaming, zero retries and a 1,024-token output cap. Google initially rejected embeddings with HTTP 402 because the linked paid tier required at least US$5 prepayment. The user approved unlinking billing only for the RetailOps Google project, returning it to the Gemini free tier. Render and Neon remain free. Free-tier quotas and Google data-use terms apply; use fictional demo content and do not upload private business/customer data.
+
+Deployed per-user daily allowances are two chat turns, three retrieval queries and two document ingestions; document size is capped at 5,000 characters, ten chunks and five documents per user. These app limits are not a monetary billing cap if Google billing is re-enabled. The verification used the manager's ingestion/retrieval allowances, so new indexing/search requests may be limited until their rolling windows expire. Configuration deployment `dep-dbbl7mtg1s2s739bovd0` runs unchanged application source `4a0244a`.
+
+The real hosted scenario indexed a fictional policy, retrieved its source excerpt, streamed a tool-backed cited answer, reopened/replayed the saved answer, and prepared a cited replenishment proposal requiring explicit manager confirmation. Separate receiving added exactly 30 demo units once. Twenty-two API assertions check SQL revenue agreement, source ownership, replay/idempotency, stock behavior and analyst access denial. No external supplier order was transmitted. This is a single synthetic scenario, not a general accuracy or load test.
 
 ## Database and access
 
