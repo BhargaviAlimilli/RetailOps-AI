@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 import pytest
 from fastapi import HTTPException
+from test_retail_reporting import retail_data as retail_data
 
 from app.ai import tools
 from app.ai.grounded import GroundedProvider, bounded_result
@@ -77,3 +78,37 @@ def test_large_operational_results_remain_complete_json_with_explicit_omissions(
     assert result["omitted_items"] > 0
     assert len(json.dumps(result)) < 6000
     assert json.loads(json.dumps(result))["items"][0]["date"] == "0"
+
+
+def test_sales_tool_labels_the_actual_reporting_period(db_url, retail_data):
+    from uuid import uuid4
+
+    from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
+    async def run():
+        engine = create_async_engine(db_url)
+        try:
+            async with async_sessionmaker(engine)() as db:
+                result = await tools.execute(
+                    db,
+                    uuid4(),
+                    "get_sales_summary",
+                    {
+                        "store_id": str(retail_data["store"]),
+                        "start_date": "2026-10-15",
+                        "end_date": "2026-10-16",
+                    },
+                    Settings(_env_file=None),
+                )
+                assert result["revenue"] == "26.00"
+                assert result["period"] == {
+                    "start_date": "2026-10-15",
+                    "end_date": "2026-10-16",
+                    "days": 2,
+                    "timezone": "UTC",
+                }
+        finally:
+            await engine.dispose()
+
+    with asyncio.Runner(loop_factory=asyncio.SelectorEventLoop) as runner:
+        runner.run(run())

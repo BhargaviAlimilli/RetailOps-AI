@@ -4,6 +4,7 @@ from collections.abc import Callable
 from threading import BoundedSemaphore
 from typing import Literal, Protocol
 
+import structlog
 from google import genai
 from google.genai import types
 
@@ -13,6 +14,7 @@ from app.core.config import Settings
 
 EmbeddingTask = Literal["RETRIEVAL_DOCUMENT", "RETRIEVAL_QUERY"]
 embedding_slots = BoundedSemaphore(4)
+logger = structlog.get_logger(__name__)
 
 
 class Embeddings(Protocol):
@@ -77,6 +79,11 @@ class GeminiEmbeddings:
         except ProviderError:
             raise
         except Exception as error:
+            logger.warning(
+                "embedding_upstream_error",
+                error_type=type(error).__name__,
+                status=getattr(error, "code", None),
+            )
             raise normalize_error(error) from None
         finally:
             if client is not None:

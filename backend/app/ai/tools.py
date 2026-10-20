@@ -198,27 +198,42 @@ async def execute(
     args = TOOL_SCHEMAS[name][0].model_validate(arguments)
     if name.startswith("get_sales_") or name == "get_top_products":
         data = await retail.dashboard(session, args.start_date, args.end_date, args.store_id, None)
+        start, exclusive_end, days = retail.reporting_period(args.start_date, args.end_date)
+        period = {
+            "start_date": start.date().isoformat(),
+            "end_date": (exclusive_end.date() - timedelta(days=1)).isoformat(),
+            "days": days,
+            "timezone": "UTC",
+        }
         if name == "get_sales_trends":
             return json_safe(
                 {
                     "trend": data["trend"],
+                    "period": period,
                     "interpretation": "Association does not establish causation.",
                 }
             )
         if name == "get_top_products":
             return json_safe(
-                {"top_products": data["top_products"], "slow_products": data["slow_products"]}
+                {
+                    "top_products": data["top_products"],
+                    "slow_products": data["slow_products"],
+                    "period": period,
+                }
             )
         return json_safe(
             {
-                key: data[key]
-                for key in (
-                    "currency",
-                    "revenue",
-                    "gross_profit",
-                    "order_count",
-                    "revenue_change_percent",
-                )
+                "period": period,
+                **{
+                    key: data[key]
+                    for key in (
+                        "currency",
+                        "revenue",
+                        "gross_profit",
+                        "order_count",
+                        "revenue_change_percent",
+                    )
+                },
             }
         )
     if name in {"get_inventory_levels", "get_stockout_risks"}:

@@ -5,6 +5,7 @@ from collections.abc import AsyncIterator, Callable
 from contextlib import suppress
 
 import httpx
+import structlog
 from google import genai
 from google.genai import errors, types
 from pydantic import ValidationError
@@ -21,6 +22,8 @@ from app.ai.provider import (
     Usage,
 )
 from app.core.config import Settings
+
+logger = structlog.get_logger(__name__)
 
 
 def stable_schema(schema: dict) -> types.Schema:
@@ -135,14 +138,18 @@ class GeminiProvider:
                 json=payload,
                 headers={"x-goog-api-key": self.settings.gemini_api_key.get_secret_value()},
             ) as response:
+                logger.info("ai_upstream_status", transport="json", status=response.status_code)
                 if response.status_code != 200:
                     raise errors.APIError(response.status_code, {"message": "Stream unavailable"})
                 async for record in records(response.aiter_bytes()):
                     if "error" in record:
                         code = record["error"].get("code", 503)
+                        logger.warning("ai_upstream_stream_error", status=code)
                         raise errors.APIError(code, {"message": "Stream unavailable"})
                     try:
-                        yield types.GenerateContentResponse.model_validate(record)
+                        # REST may add metadata before the installed SDK knows the field.
+                        # Validate consumed values while ignoring additive wire fields.
+                        yield types.GenerateContentResponse.model_validate(record, extra="ignore")
                     except ValidationError:
                         raise ProviderError("ai_invalid_output") from None
 
