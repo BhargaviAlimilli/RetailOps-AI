@@ -1,0 +1,36 @@
+{
+  "status": "passed",
+  "verified_at_utc": "2026-10-21T03:39:52.419859+00:00",
+  "url": "https://retailops-ai-bhargavi.onrender.com",
+  "source_commit": "3933d924ad9ade0b17ec04498c2d196524959a95",
+  "deployment_id": "dep-dbc36n5g1s2s73bltn8g",
+  "desktop_browser": {
+    "viewport_width": 1280,
+    "viewport_height": 600,
+    "sidebar_content_height": 989,
+    "sidebar_scroll_top": 388.8,
+    "overflow_y": "auto",
+    "settings_visible_after_scroll": true,
+    "footer_visible_after_scroll": true
+  },
+  "local_mobile_browser": {
+    "viewport_width": 390,
+    "viewport_height": 640,
+    "settings_reachable_after_scroll": true
+  },
+  "checks": [
+    "45 frontend tests passed",
+    "ESLint passed",
+    "changed CSS Prettier passed",
+    "TypeScript and Vite production build passed",
+    "deployed health 200",
+    "deployed database readiness 200",
+    "deployed login and system pages 200",
+    "new CSS served",
+    "real manager login and dashboard succeeded",
+    "AI and RAG configuration preserved",
+    "manager logout succeeded"
+  ],
+  "generation_requests": 0,
+  "embedding_requests": 0
+}
