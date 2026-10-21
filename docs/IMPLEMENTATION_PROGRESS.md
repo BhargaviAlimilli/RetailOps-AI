@@ -173,3 +173,10 @@
 - **22 real HTTPS assertions pass**, including answer/database agreement, actual source references, saved answer replay with identical message ID and no extra messages, workflow resume without a duplicate order, audited receiving, cross-user private-resource 404s and analyst write 403s. Reopening the saved conversation in Chrome also succeeds without generating another answer. A harness step-name capitalization mismatch was corrected against the real API before the complete pass.
 - Total bounded provider attempts: **2 generation requests; 4 successful embedding requests and 2 rejected embedding requests; zero automatic retries**. No additional provider calls were used for replay or access checks. Google free-tier quotas/data terms and Render/Neon free-plan limits apply. The manager's daily ingestion/retrieval allowances were consumed by verification.
 - Evidence: `docs/verification/hosted-ai-e2e.json`. Existing 136 backend tests, 45 frontend tests and five successful CI jobs remain prior application-source verification; they were not rerun or represented as new checks for this configuration/documentation-only update.
+
+
+## 2026-10-21 - Sidebar scrolling correction
+
+- User identified the fixed left navigation as unscrollable on shorter desktop windows. Its vertical scrolling rule existed only inside the mobile breakpoint. Enabled vertical overflow for the shared sidebar, prevented its direct flex children from shrinking, and contained vertical scroll chaining. Removed the redundant mobile-only overflow rule.
+- Actual Chrome verification against the local app at 1280 by 600: sidebar content height 989 pixels, viewport height 600 pixels, computed overflow auto, scroll position reached 388.8 pixels, and Settings became fully reachable. Mobile verification at 390 by 640 also reached Settings after scrolling. No AI or embedding calls were made.
+- Frontend checks pass: ESLint, changed CSS Prettier check, 45 tests across 11 test files, and TypeScript plus Vite production build. User subsequently requested deployment of this fix to the existing service.

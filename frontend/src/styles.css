@@ -52,6 +52,11 @@ button:disabled {
   display: flex;
   flex-direction: column;
   z-index: 20;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+.sidebar > * {
+  flex-shrink: 0;
 }
 .brand {
   text-decoration: none;
@@ -715,9 +720,6 @@ h3 {
   }
   .sidebar-note {
     margin-top: 30px;
-  }
-  .sidebar {
-    overflow-y: auto;
   }
   .section-heading {
     gap: 10px;
